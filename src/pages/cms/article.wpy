@@ -2,7 +2,7 @@
   <import src="../../wxParse/wxParse.wxml"/>
   <view class="art-header" style="display:display">
     <image class="art-img" src="{{imageHref}}"></image>
-<!--    <view class="art-title">{{detail.title}}</view> -->
+    <view class="art-title">{{detail.title}}</view> 
   </view>
 
   <template is="wxParse" data="{{wxParseData:article.nodes}}"/>

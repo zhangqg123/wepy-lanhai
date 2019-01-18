@@ -1,0 +1,174 @@
+<template>
+  <view class="container" wx:if="{{init}}">
+
+    <!--主内容区域-->
+    <view class="main-box row">
+        <!--分类侧边栏-->
+      <!--右侧滚动-->
+      <scroll-view scroll-y class="goods-box" bindscrolltolower="onReachBottom">
+        <!--分类名称
+        <view class="goods-title row">
+          <text class="weak">{{selectedCategoryName}}</text>
+        </view> -->
+        <!--指南列表-->
+        <view class="guide-list">
+          <repeat for="{{page.list}}" key="index" index="index" item="item">
+<!--            <view @tap = "enterApply({{item.id}},{{item.guideId}})" > -->
+              <WorkItem :apply.sync="item" @enter.user="enterApply" @reApply.user="reApply" @cancelApply.user="cancelApply"/>
+<!--            </view> -->
+          </repeat>
+        </view>
+        <Loadmore :page.sync="page" emptyText="暂无项目"/>
+      </scroll-view>
+
+    </view>
+    <!--操作栏-->
+<!--    <ActionBar @tap.user="add" okText="新增商品" cancelText="返回" /> -->
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import base from '../../mixins/base';
+  import pagination from '../../mixins/pagination';
+  import auth from '../../api/auth';
+  import Cache from '../../utils/Cache';
+  import Tips from '../../utils/Tips';
+  import applies from '../../api/applies';
+  import zwzx from '../../api/zwzx';
+  import WorkItem from '../../components/apply/work_item';
+  import ActionBar from '../../components/common/action_bar';
+  import Loadmore from '../../components/weui/loadmore';
+  import Event from '../../utils/Event';
+  export default class MyWorks extends wepy.page {
+    def = {
+      init: false,
+      display: 'false',
+      works:{},
+      page: {
+        list: []
+      },
+      categories: []
+    };
+    data = {...this.def};
+    async onLoad () {
+      try {
+        await this.load();
+        Event.listen(Event.WORK_LIST_UPDATE, this.load.bind(this), this);
+      } catch (e) {
+      } finally {
+        this.loaded();
+      }
+    };
+
+    async load(){
+        const loginCode = auth.getConfig('login_code');
+        const status = auth.getConfig('status');
+        if (loginCode != null && status > 3 ) {
+          const mdata = await Cache.management();
+          const gdata = await Cache.guideIdName();
+          this.page = applies.workList(mdata.list,gdata.list);
+          await this.next();
+        }else{
+          if (loginCode != null && status == 3) {
+            this.$redirect('../login/realAuth');
+          }else{
+            this.$redirect('../login/index');
+          }
+        }
+    }
+
+    methods = {
+      // 点击分类
+      switchTab(selectedId) {
+        console.info("categery selectedId",selectedId);
+        this.reload();
+      },
+      async enterApply(info) {
+        if (!auth.isLogin()) {
+          this.$root.$navigate('/pages/login/index',{url:'/pages/apply/edit',id:info.id,guideId:info.guideId});
+        }else{
+          this.$root.$navigate('/pages/apply/edit', {id:info.id,guideId:info.guideId});
+        }
+
+      },
+      async reApply(info) {
+        if (!auth.isLogin()) {
+          this.$root.$navigate('/pages/login/index',{url:'/pages/apply/edit',id:info.id,guideId:info.guideId});
+        }else{
+          try {
+            console.info("info",info);
+            const ret=await applies.reApply(info.id,info.taskId,info.formId);
+            Event.emit(Event.WORK_LIST_UPDATE);
+            console.info("ret",ret);
+            await Tips.success('开始预审');
+          } catch (e) {
+            this.tips(e.message);
+          } finally {
+            this.loaded();
+          }
+        }
+      },
+      async cancelApply(info) {
+        if (!auth.isLogin()) {
+          this.$root.$navigate('/pages/login/index',{url:'/pages/apply/edit',id:info.id,guideId:info.guideId});
+        }else{
+          try {
+            await Tips.confirm('是否确认撤消该申请？');
+            const ret=await applies.cancelApply(info.id,info.taskId);
+            Event.emit(Event.WORK_LIST_UPDATE);
+            console.info("ret",ret);
+          } catch (e) {
+            this.tips(e.message);
+          } finally {
+            this.loaded();
+          }
+        }
+      }
+    };
+    computed = {
+      selectedCategoryName() {
+        if (this.init && this.categories && this.categories.list && this.categories.list.length > 0) {
+          const selectedId = this.categories.selectedId;
+          const selectedCategory = this.categories.list.find(item => item.id == selectedId);
+          return selectedCategory ? selectedCategory.title : "全部";
+        }
+      }
+    };
+    events = {};
+    components = {
+      WorkItem: WorkItem,
+      ActionBar: ActionBar,
+      Loadmore: Loadmore
+    };
+    mixins = [base, pagination];
+    config = {
+      navigationBarTitleText: '我的办件',
+      enablePullDownRefresh: true
+    };
+  }
+</script>
+
+<style lang="scss">
+  @import "../../styles/variable";
+  .main-box{
+    width: 100%;
+    position: absolute;
+    top: 5px;
+/*    bottom: 55px; */
+
+    .goods-box{
+      flex: 1;
+      height: 100%;
+      .goods-title{
+        height: 30px;
+        padding-left: 20rpx;
+        align-items: center;
+        border-bottom: $border;
+      }
+      .guide-list{
+        background-color: #FFF;
+      }
+    }
+  }
+</style>

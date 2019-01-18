@@ -1,0 +1,155 @@
+<template>
+  <view class="container">
+  <view class="news-item-container">
+  <repeat for="{{atricles}}" key="index" index="index" item="item">
+  <view class="news-item" @tap="toArticlesInfo({{item.id}},{{item.imageHref}})">
+  <view class="news-item-left"><text class="xxl">{{item.title}}</text></view>
+  <view class="news-item-right"><image class="news-image" src="{{domain + item.imageHref}}"></image></view>
+  </view>
+  </repeat>
+  </view>
+  </view>
+
+</template>
+
+
+<script>
+  import wepy from 'wepy';
+  import api from '../../api/api';
+  import base from '../../mixins/base';
+  import Event from '../../utils/Event';
+  import Tips from '../../utils/Tips';
+
+  export default class HomeIndex extends wepy.page {
+    def = {
+      atricles: [],
+      columnId: '',
+      //总页数
+      totalPage: 1,
+      //当前页
+      pageNumber: 1,
+      domain: ''
+    };
+    data = {...this.def};
+    async onLoad (options) {
+      try {
+        this.columnId = options.columnId;
+        wx.setNavigationBarTitle({
+          title: options.columnName
+        })
+
+        this.domain = api.apiAdUpload;
+        const arrayJson = await api.getArticlesList({
+          query: {
+            columnId: this.columnId
+          }
+        });
+        console.info("arrayJson",arrayJson);
+
+        if (arrayJson.data.success == true) {
+          this.atricles = arrayJson.data.obj.list.results;
+          this.totalPage = arrayJson.data.obj.count;
+          console.log(this.atricles);
+          console.log(this.domain);
+          console.log(this.totalPage);
+//          this.$apply();
+        } else {
+          Tips.error(arrayJson.data.msg);
+        }
+
+ 
+      } catch (e) {
+        Tips.error(e.message);
+      } finally {
+        this.loaded();
+      }
+    };
+    /**
+     * 页面上拉触底事件的处理函数
+     * @returns {Promise<void>}
+     */
+    async onReachBottom() {
+      // 当前页+1
+      var pageNumber = this.pageNumber + 1;
+      this.pageNumber = pageNumber;
+      if (pageNumber <= this.totalPage) {
+        wx.showLoading({
+          title: '加载中',
+        })
+        // 请求后台，获取下一页的数据。
+        const arrayJson = await api.getArticlesList({
+          query: {
+            columnId: this.columnId,
+            pageNumber: pageNumber
+          }
+        });
+        if (arrayJson.data.success == true) {
+          wx.hideLoading();
+          this.atricles = this.atricles.concat(arrayJson.data.obj.list.results);
+          this.$apply();
+        } else {
+          wx.hideLoading();
+          Tips.error(arrayJson.data.msg);
+        }
+      }
+    };
+
+    methods = {
+      toArticlesInfo(articlesId) {
+        wx.navigateTo({
+          url: 'article?articlesId=' + articlesId
+        });
+      }
+    };
+    components = {
+    };
+    config = {
+      "navigationBarTitleText": '栏目信息',
+      "backgroundTextStyle": 'light',
+      "navigationBarBackgroundColor": '#fff',
+      "navigationBarTextStyle": 'black'
+    };
+    mixins = [base];
+  }
+</script>
+
+<style lang="less">
+  .news-item-container {
+    background-color: #f2f2f2;
+    width: 100%;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .news-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-left: 8px;
+    padding-top: 8px;
+    padding-right: 8px;
+    padding-bottom: 8px;
+    margin-left: 8px;
+    margin-right: 8px;
+    margin-top: 8px;
+    background-color: #fff;
+    border: 1px solid #eaeaea;
+    border-bottom: 1px solid #d0d0d0;
+    border-radius: 5px;
+  }
+
+  .news-item-right {
+    width: 60px;
+    height: 60px;
+  }
+
+  .news-image {
+    width: 60px;
+    height: 60px;
+  }
+
+  .news-item-title {
+    font-size: 12pt;
+  }
+
+</style>

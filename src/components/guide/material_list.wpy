@@ -1,0 +1,54 @@
+<template>
+  <!--SKU区域// 组件化-->
+  <repeat for="{{materialList}}" key="materialName" index="index" item="item">
+    <Material :info.sync="item" :index.sync="index" :skuEditable.sync="skuEditable" @change.user="change" />
+  </repeat>
+
+
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import Material from './material';
+  import Event from '../../utils/Event';
+  export default class MaterialList extends wepy.component {
+    props = {
+      materialList: {
+        twoWay: true
+      }
+    };
+    data = {
+      skuEditable: true
+    };
+    components = {
+      Material: Material
+    };
+    methods = {
+      change(info) {
+        console.info(info);
+        Event.emit(Event.SKU_PAGE_NAVIGATE, info);
+      }
+    };
+    watch = {
+      materialList() {
+        this.resetSkuEditable();
+        this.$apply();
+      }
+    };
+    resetSkuEditable() {
+      this.skuEditable = this.materialList.length > 1;
+    }
+    events = {};
+    onLoad() {
+      this.resetSkuEditable();
+    }
+  }
+</script>
+
+<style lang="scss">
+  @import "../../styles/variable";
+  .sku-add-btn{
+    padding: 10px 20px;
+  }
+
+</style>

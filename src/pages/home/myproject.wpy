@@ -1,0 +1,161 @@
+<template>
+
+  <view class="container" wx:if="{{init}}">
+    <view @tap="enter">
+      <!-- 头图区域 -->
+      <AvatarPanel :info.sync="userInfo"/>
+    </view>
+    <view class="h-gap"/>
+    <!--操作区域-->
+    <view class="operation-box">
+      <view class="operation-row row-around" >
+        <navigator class="column-center" url="../apply/myWorks">
+          <image src="/images/home/shop.png"/>
+          <text>我的办件</text>
+        </navigator>
+        <navigator class="column-center" url="../apply/myApplies">
+          <image src="/images/home/cart.png"/>
+          <text>我的考题</text>
+        </navigator>
+        <navigator class="column-center" url="../apply/myAudits">
+          <image src="/images/home/order.png"/>
+          <text>我的预审</text>
+        </navigator>
+      </view>
+
+      <view class="hr"></view>
+
+      <view class="row-around">
+        <view class="operation-row column-center" @tap="interview">
+          <image src="/images/home/coupon.png"/>
+          <text>我的预约</text>
+        </view>
+        <navigator class="operation-row column-center" url="../apply/myAudits">
+          <image src="/images/home/more.png"/>
+          <text>我的评价</text>
+        </navigator>
+        <view class="operation-row column-center"  @tap="scan">
+          <image src="/images/home/scan.png"/>
+          <text>扫码核销</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="tab-border"/>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import base from '../../mixins/base';
+  import auth from '../../api/auth';
+//  import shop from '../../api/shop';
+  import Tips from '../../utils/Tips';
+  import Event from '../../utils/Event';
+  import Navigator from '../../components/weui/navigator';
+  import Copyright from '../../components/common/copyright';
+  import AvatarPanel from '../../components/common/avatar_panel';
+
+  export default class MyProject extends wepy.page {
+    data = {
+      init: false,
+      shop: {},
+      userInfo:{},
+      status: {},
+      statusText: '',
+      shopName: '',
+      limit: '',
+      versionText: '',
+      limitUrl: ''
+    };
+
+    async onLoad () {
+      await this.load();
+      Event.listen(Event.USER_LOGIN, this.load.bind(this), this);
+      Event.listen(Event.USER_LOGOUT, this.load.bind(this), this);
+    };
+
+    async load () {
+      const loginCode = auth.getConfig('login_code');
+      if (loginCode != null) {
+        this.userInfo = await auth.userInfo();
+        console.info("this.userInfo",this.userInfo);
+        if(this.userInfo.status==3){
+          this.userInfo.realname="未实名认证";
+        }
+      }else{
+        this.userInfo.status=0;
+        this.userInfo.realname="登录获取更多服务";
+      }
+      this.loaded();
+    };
+
+
+    methods = {
+      async enter () {
+        if(this.userInfo.status==0){
+          this.$navigate('../login/index');
+        }else{
+          this.$navigate('../login/status');
+        }
+      },
+      async interview () {
+        if(this.userInfo.status==0){
+          this.$navigate('../login/index');
+        }else{
+          this.$navigate('../apply/myInterviews');
+        }
+      }
+
+    };
+    components = {
+      Copyright: Copyright,
+      Version: Navigator,
+      NavStatus: Navigator,
+      NavNotice: Navigator,
+      NavDelivery: Navigator,
+      NavVip: Navigator,
+      NavDeliver: Navigator,
+      NavReduce: Navigator,
+      NavCategory: Navigator,
+      NavShops: Navigator,
+      NavLogout: Navigator,
+      AvatarPanel: AvatarPanel,
+      NavManusl: Navigator,
+      NavComment:Navigator
+    };
+    config = {
+      navigationBarTitleText: '我的信息'
+    };
+    mixins = [base];
+  }
+</script>
+
+<style lang="scss">
+  @import "../../styles/variable";
+
+  /*操作区域*/
+  .operation-box{
+    background-color: #FFFCFC;
+    margin-bottom: 20rpx;
+    padding-top:35rpx;
+    padding-bottom: 35rpx;
+    border-bottom: $border;
+
+    image{
+      height: 90rpx;
+      width: 90rpx;
+    }
+
+    .hr{
+      height: 40rpx;
+      width: 100%;
+    }
+
+    .operation-row{
+      text{
+        color: $color-weak;
+        margin-top: 10rpx;
+      }
+    }
+  }
+</style>

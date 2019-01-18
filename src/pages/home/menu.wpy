@@ -1,0 +1,74 @@
+<template>
+  <view class="container" wx:if="{{init}}">
+    <view class="column">
+      <view class="title-box row-between">
+        <text class="muted lg">部门列表</text>
+        <!--<text class="muted lg" @tap="nopen">创建</text>-->
+      </view>
+
+      <!--店铺列表-->
+      <view class="list-box column">
+        <repeat for="{{menus}}" key="index" index="index" item="item">
+          <view @tap="enter({{item.id}})">
+            <MenuItem :menu.sync="item"></MenuItem>
+          </view>
+        </repeat>
+      </view>
+    </view>
+
+    <!--占位符-->
+    <Placeholder :list="menus" message="您还没有创建店铺"/>
+
+  </view>
+
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import Cache from '../../utils/Cache';
+  import auth from '../../api/auth';
+  import base from '../../mixins/base';
+  import Tips from '../../utils/Tips';
+  import MenuItem from '../../components/zwzx/item';
+  import Placeholder from '../../components/common/placeholder';
+  import ActionBar from '../../components/common/action_bar';
+
+  export default class MenuList extends wepy.page {
+    def = {
+      menus: [],
+      init: false
+    };
+    data = {...this.def};
+    async onLoad () {
+      const data = await Cache.management();
+      this.menus = data.list;
+      this.loaded();
+    };
+    methods = {
+      // 进入部门
+      async enter(menuId) {
+        this.$root.$navigate('/pages/guide/guide_list', {management: menuId});
+      },
+    };
+    mixins = [base];
+    config = {
+      navigationBarTitleText: '选择办事部门'
+    };
+    components = {
+      MenuItem: MenuItem,
+      Placeholder: Placeholder,
+      ActionBar: ActionBar
+    };
+  }
+</script>
+
+<style lang="scss">
+  @import "../../styles/variable";
+  .title-box{
+    padding:15rpx 30rpx;
+  }
+  .list-box{
+    background: white;
+    border-bottom: $border;
+  }
+</style>

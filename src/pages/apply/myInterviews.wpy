@@ -1,0 +1,153 @@
+<template>
+  <view class="container" wx:if="{{init}}">
+
+    <!--主内容区域-->
+    <view class="main-box row">
+        <!--分类侧边栏-->
+      <!--右侧滚动-->
+      <scroll-view scroll-y class="goods-box" bindscrolltolower="onReachBottom">
+        <!--分类名称
+        <view class="goods-title row">
+          <text class="weak">{{selectedCategoryName}}</text>
+        </view> -->
+        <!--指南列表-->
+        <view class="guide-list">
+          <repeat for="{{page.list}}" key="index" index="index" item="item">
+            <MyInterviewItem :apply.sync="item" @start.user="startApply" @cancel.user="cancelInterview"/>
+          </repeat>
+        </view>
+        <Loadmore :page.sync="page" emptyText="暂无项目"/>
+      </scroll-view>
+
+    </view>
+    <!--操作栏-->
+<!--    <ActionBar @tap.user="add" okText="新增商品" cancelText="返回" /> -->
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import base from '../../mixins/base';
+  import pagination from '../../mixins/pagination';
+  import auth from '../../api/auth';
+  import Cache from '../../utils/Cache';
+  import Tips from '../../utils/Tips';
+  import applies from '../../api/applies';
+  import zwzx from '../../api/zwzx';
+  import MyInterviewItem from '../../components/apply/myInterview_item';
+  import ActionBar from '../../components/common/action_bar';
+  import Loadmore from '../../components/weui/loadmore';
+  import Event from '../../utils/Event';
+  export default class MyInterviews extends wepy.page {
+    def = {
+      init: false,
+      display: 'false',
+      mode: '',
+      page: {
+        list: []
+      },
+      param: [],
+      categories: []
+    };
+    data = {...this.def};
+    async onLoad () {
+      try {
+        const loginCode = auth.getConfig('login_code');
+        const status = auth.getConfig('status');
+        if (loginCode != null && status > 3 ) {
+          this.updateApply();
+          Event.listen(Event.APPLY_LIST_UPDATE, this.updateApply.bind(this), this);
+        }else{
+          if (loginCode != null && status == 3) {
+            this.$redirect('../login/realAuth');
+          }else{
+            this.$redirect('../login/index');
+          }
+        }
+      } catch (e) {
+      } finally {
+        this.loaded();
+      }
+    };
+
+    async updateApply(){
+          const mdata = await Cache.management();
+          const gdata = await Cache.guideIdName();
+          this.page = applies.applyInterviewList(mdata.list,gdata.list,"myInterviews");
+          await this.next();
+          console.info("this.page",this.page);
+    }
+
+    methods = {
+      async startApply(info) {
+        console.info('info',info);
+        if (!auth.isLogin()) {
+          this.$root.$navigate('/pages/login/index',{url:'/pages/apply/edit',id:info.id,guideId:info.guideId});
+        }else{
+          this.$root.$navigate('/pages/apply/interview',{id:info.id,guideId:info.guideId});        }
+      },
+      async cancelInterview(info) {
+        if (!auth.isLogin()) {
+          this.$root.$navigate('/pages/login/index');
+        }else{
+          try {
+            this.param.applyId=info.applyId;
+            this.param.interviewId=info.interviewId;
+            const ret=await applies.cancelInterview(this.param);
+            console.info('ret',ret);
+            await Tips.success('预约取消');
+            Event.emit(Event.APPLY_LIST_UPDATE);
+          } catch (e) {
+            this.tips(e.message);
+          } finally {
+            this.loaded();
+          }
+        }
+      }      
+    };
+    computed = {
+      selectedCategoryName() {
+        if (this.init && this.categories && this.categories.list && this.categories.list.length > 0) {
+          const selectedId = this.categories.selectedId;
+          const selectedCategory = this.categories.list.find(item => item.id == selectedId);
+          return selectedCategory ? selectedCategory.title : "全部";
+        }
+      }
+    };
+    events = {};
+    components = {
+      MyInterviewItem: MyInterviewItem,
+      ActionBar: ActionBar,
+      Loadmore: Loadmore
+    };
+    mixins = [base, pagination];
+    config = {
+      navigationBarTitleText: '我要预约',
+      enablePullDownRefresh: true
+    };
+  }
+</script>
+
+<style lang="scss">
+  @import "../../styles/variable";
+  .main-box{
+    width: 100%;
+    position: absolute;
+    top: 5px;
+/*    bottom: 55px; */
+
+    .goods-box{
+      flex: 1;
+      height: 100%;
+      .goods-title{
+        height: 30px;
+        padding-left: 20rpx;
+        align-items: center;
+        border-bottom: $border;
+      }
+      .guide-list{
+        background-color: #FFF;
+      }
+    }
+  }
+</style>

@@ -1,0 +1,118 @@
+<template>
+   <view class="weui-cell weui-cell_input">
+    <view class="weui-cell__hd">
+      <view style="padding-top:20rpx;padding-bottom:20rpx">{{info.materialName}}</view>
+    </view>
+
+  </view>
+  <view class="weui-cell weui-cell_input">
+    <view style="width: 425rpx;">
+      <input class="weui-input" id="applyMaterial" value="{{info.applyMaterial}}" placeholder="请输入办件材料"/>
+    </view>
+    <view class="ml20 row" style="width: 325rpx;">
+      <button class="weui-btn mini-btn" type="primary" size="mini" @tap="chooseFile">选择</button>
+      <button class="weui-btn mini-btn"  type="weak" size="mini" @tap="upload">上传</button>
+    </view>
+  </view>
+
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import applies from '../../api/applies';
+  import Tips from '../../utils/Tips';
+  import WxUtils from '../../utils/WxUtils';
+  export default class Material2 extends wepy.component {
+    props = {
+      index: {},
+      info: {
+        twoWay: true
+      },
+      skuEditable: {
+        default: false
+      }
+    };
+    data = {
+      files: {},
+      existFile: ""
+    };
+    methods = {
+/*      input(index, e) {
+        const fieldName = e.currentTarget.id;
+        const fieldValue = e.detail.value;
+        this.$emit('change', {index, fieldName, fieldValue});
+      },
+*/      
+      async chooseFile() {
+        const param = {
+          count: 1,
+          sizeType: ['compressed']
+        };
+        const tempFilePaths = await WxUtils.chooseImage(param, 2);
+        console.info("tempFilePaths",tempFilePaths);
+        const files = tempFilePaths.map(item => {
+          return {
+            temp: true,
+            url: item
+          }
+        });
+        if(files.length>0){
+          this.info.applyMaterial=files[0].url;
+          this.files=files;
+          this.$apply();         
+        }
+      },
+
+      async upload () {
+        try {
+          Tips.loading('上传中');
+          this.existFile=this.info.id;
+          const files=this.files;
+          if(files.length>0){
+            const result = await applies.upload(files[0].url,this.existFile);
+            const file = JSON.parse(result);
+            this.info.applyMaterial = file.attributes.url;
+            this.$apply();         
+          }
+        } finally {
+          Tips.loaded();
+        }
+      }
+      /*
+      materialStandard() {
+        const standard = this.info.materialStandard;
+        this.$emit('change', "ss:"+standard);
+      },
+      materialRequired() {
+        const required = this.info.materialRequired;
+        this.$emit('change', "rr:"+required);
+      }
+*/      
+    };
+    
+    events = {};
+    onLoad() {
+      console.info("this.info",this.info);
+    }
+  }
+</script>
+
+<style lang="scss">
+  @import "../../styles/variable";
+  .sku-box{
+    border-bottom: $border;
+    background-color: white;
+
+    .info-box{
+      flex: 0;
+      .weui-cells-form{
+        border-bottom: none;
+      }
+    }
+
+    .op-box{
+      width: 100rpx;
+      height: 100%;
+    }
+  }
+</style>

@@ -1,0 +1,81 @@
+<template>
+  <view class="container" wx:if="{{init}}">
+    <view class="column">
+      <view class="title-box row-between">
+        <text class="muted lg">考试列表</text>
+        <!--<text class="muted lg" @tap="nopen">创建</text>-->
+      </view>
+
+      <!--考试列表-->
+      <view class="list-box column">
+        <repeat for="{{exams}}" key="index" index="index" item="item">
+          <view @tap="enter({{item.id}})">
+            <ExamItem :exam.sync="item"></ExamItem>
+          </view>
+        </repeat>
+      </view>
+    </view>
+
+    <!--占位符-->
+    <Placeholder :list="menus" message="您还没有创建考试"/>
+
+  </view>
+
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import Cache from '../../utils/Cache';
+  import auth from '../../api/auth';
+  import signin from '../../api/signin';
+  import base from '../../mixins/base';
+  import Tips from '../../utils/Tips';
+  import ExamItem from '../../components/exam/examItem';
+  import Placeholder from '../../components/common/placeholder';
+  import ActionBar from '../../components/common/action_bar';
+
+  export default class ExamList extends wepy.page {
+    def = {
+      exams: [],
+      init: false
+    };
+    data = {...this.def};
+    async onLoad () {
+      var openId = auth.getConfig('openId');
+      if (openId == null) {
+        openId=await signin.jscode2session();
+        await auth.setConfig('openId', openId);
+      }
+      const data = await Cache.examList();
+      this.exams = data.list;
+      this.loaded();
+    };
+    methods = {
+      // 进入部门
+      async enter(examId) {
+        this.$root.$navigate('/pages/exam/examPage', {examId: examId});
+      },
+    };
+    mixins = [base];
+    config = {
+      navigationBarTitleText: '选择办事部门'
+    };
+    components = {
+      ExamItem: ExamItem,
+      Placeholder: Placeholder,
+      ActionBar: ActionBar
+    };
+  }
+</script>
+
+<style lang="scss">
+  @import "../../styles/variable";
+  .title-box{
+    padding:15rpx 30rpx;
+  }
+  .list-box{
+    background: white;
+    border-bottom: $border;
+  }
+
+</style>

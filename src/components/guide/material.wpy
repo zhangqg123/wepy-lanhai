@@ -1,0 +1,102 @@
+<template>
+  <view class="sku-box row mt10">
+    <view class="info-box">
+      <view class="weui-cells weui-cells_after-title weui-cells-merge-top">
+        <view class="weui-cell" wx:if="{{skuEditable}}">
+          <view class="weui-cell__hd" >
+            <view class="weui-label"><text class="primary xl">材料名称</text></view>
+          </view>
+          <view class="weui-cell__bd">
+            <text class="xl">{{info.materialName}}</text>
+          </view>
+          <view class="weui-cell__ft">
+          </view>
+        </view>
+        <view class="weui-cell">
+          <view class="weui-cell__hd" >
+            <view class="weui-label"><text class="primary xl">材料内容</text></view>
+          </view>
+          <view class="weui-cell__bd">
+            <text class="xl">{{info.materialContent}}</text>
+          </view>
+          <view class="weui-cell__ft">
+          </view>
+        </view>
+          <view class="weui-cell" @tap="materialStandard">
+            <view class="weui-cell__hd">
+              <view class="weui-label"><image class="icon mr10" src="/images/icons/package.png"/><text class="primary xl">受理标准</text></view>
+            </view>
+            <view class="weui-cell__bd">
+            </view>
+            <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+          </view>
+          <view class="weui-cell" @tap="materialRequired">
+            <view class="weui-cell__hd">
+              <view class="weui-label"><image class="icon mr10" src="/images/icons/package.png"/><text class="primary xl">材料要求</text></view>
+            </view>
+            <view class="weui-cell__bd">
+            </view>
+            <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+          </view>
+      </view>
+    </view>
+
+
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class Material extends wepy.component {
+    props = {
+      index: {},
+      info: {
+      },
+      skuEditable: {
+        default: false
+      }
+    };
+    data = {};
+    methods = {
+/*      input(index, e) {
+        console.info(index, e);
+        const fieldName = e.currentTarget.id;
+        const fieldValue = e.detail.value;
+        this.$emit('change', {index, fieldName, fieldValue});
+      },
+*/
+      materialStandard() {
+        const standard = this.info.materialStandard;
+        this.$emit('change', "ss:"+standard);
+      },
+      materialRequired() {
+        const required = this.info.materialRequired;
+        this.$emit('change', "rr:"+required);
+      }
+    };
+    
+    events = {};
+    onLoad() {
+    }
+  }
+</script>
+
+<style lang="scss">
+  @import "../../styles/variable";
+  .sku-box{
+    border-bottom: $border;
+    background-color: white;
+
+    .info-box{
+      flex: 0;
+      .weui-cells-form{
+        border-bottom: none;
+      }
+    }
+
+    .op-box{
+      width: 100rpx;
+      height: 100%;
+    }
+  }
+</style>

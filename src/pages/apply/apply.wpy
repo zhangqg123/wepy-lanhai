@@ -1,0 +1,10 @@
+<template>
+	<web-view src="http://localhost:8080/jeecg/zwzx/index.do?toAdd"></web-view>
+</template>
+<script>
+  import wepy from 'wepy';
+  export default class Apply extends wepy.page {
+  	async onLoad (option) {
+	}
+  }
+</script>

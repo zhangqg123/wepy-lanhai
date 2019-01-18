@@ -1,0 +1,171 @@
+<style lang="scss">
+  @import "./styles/zent";
+  @import "./styles/base";
+  @import "./styles/weui";
+  @import "./styles/weui-extend";
+</style>
+
+<script>
+  import wepy from 'wepy';
+  import 'wepy-async-function';
+  import WxUtils from './utils/WxUtils';
+
+  export default class extends wepy.app {
+    globalData = {
+      auth: {},
+      shop: {},
+      header: {
+        'Content-Type': 'application/json',
+        'Cookie': ''
+      },
+      appId: 'wx5c51671623808ac0',
+      resCode: '',
+      appCode: 'xxx',
+      aesKey: "W3ZNF7UMBAn9WFnx",
+      ivKey: "chMQRwqC2xIIXqLV",
+      baseUrl2: 'https://hunchun.zqgzht.com',
+//      baseUrl2: 'http://192.168.0.199:8080/jeecg',
+      version: 'v1.0.0'
+    };
+    constructor() {
+      super();
+      // 注册中间件
+      this.use('requestfix');
+      this.use('promisify');
+      this.intercept('request', {
+        config(p) {
+          p.header = this.createAuthHeader();
+          return p;
+        }
+      });
+      this.intercept('uploadFile', {
+        config(p) {
+          p.header = this.createAuthHeader();
+          return p;
+        },
+        success(p) {
+          return p.data;
+        }
+      });
+    }
+    /**
+     * 构造权限头部
+     */
+    createAuthHeader() {
+      const loginCode = wepy.$instance.globalData.auth.login_code;
+      const header = {};
+      if (loginCode) {
+        header['login-code'] = loginCode;
+      }
+      return header;
+    }
+
+    onLaunch() {
+      const sysinfo = wx.getSystemInfoSync();
+      console.info("sysinfo",sysinfo);
+      // 同步开放平台EXT数据
+      const ext = wepy.getExtConfigSync();
+      console.info('[ext] init ext data', ext);
+      Object.assign(wepy.$instance.globalData, ext);
+      this.syncStoreConfig('login_code');
+      this.syncStoreConfig('status');
+      this.syncStoreConfig('openId');
+
+//      this.syncStoreConfig({'login_code': 'login_code'}, 'login_code');
+//      this.syncStoreConfig({'status': 'status'}, 'status');
+//      this.syncStoreConfig({'openId': 'openId'}, 'openId');
+    }
+    syncStoreConfig(key) {
+      try {
+        const value = wepy.getStorageSync(key);
+        if (value !== '') {
+          console.info(`[auth]${key} sync success `+value);
+          wepy.$instance.globalData.auth[key] = value;
+        }
+      } catch (e) {
+        console.warn(`[auth]${key} sync fail `);
+      }
+    }
+/*
+    syncStoreConfig(obj, key) {
+      const value = wepy.getStorageSync(obj[key]);
+      if (value !== '') {
+        wepy.$instance.globalData.auth[key] = value;
+      }
+    }
+*/
+    config = {
+      pages: [
+        'pages/home/home',
+        'pages/home/menu',
+        'pages/home/exam',
+        'pages/home/signin',
+        'pages/home/myproject',
+        'pages/home/examList',
+        'pages/login/realAuth',
+        'pages/login/idCardAuth',
+        'pages/login/index',
+        'pages/login/register',
+        'pages/login/status',
+        'pages/cms/article',
+        'pages/cms/articleList',
+        'pages/cms/theme',
+        'pages/apply/apply',
+        'pages/apply/edit',
+        'pages/apply/interview',
+        'pages/apply/myInterviews',
+        'pages/apply/myApplies',
+        'pages/apply/myAudits',
+        'pages/apply/myWorks',
+//        'pages/apply/waitInterviews',
+        'pages/exam/examScore',
+        'pages/exam/examPage',
+        'pages/guide/commonDetail',
+        'pages/guide/guide',
+        'pages/guide/guide_list'
+      ],
+      "permission": {
+        "scope.userLocation": {
+          "desc": "你的位置信息将用于小程序位置接口的效果展示"
+        }
+      },
+      window: {
+        backgroundTextStyle: 'dark',
+        backgroundColor: '#F5F5F5',
+        navigationBarBackgroundColor: '#1296db'
+      },
+      tabBar: {
+        color: '#666666',
+        selectedColor: '#1296db',
+        borderStyle: 'white',
+        backgroundColor: '#FAFAFA',
+        list: [
+          {
+            iconPath: 'images/tab/manage.png',
+            selectedIconPath: 'images/tab/manage-active.png',
+            pagePath: 'pages/home/home',
+            text: '概况'
+          },
+          {
+            iconPath: 'images/tab/order.png',
+            selectedIconPath: 'images/tab/order-active.png',
+            pagePath: 'pages/home/examList',
+            text: '考试'
+          },
+          {
+            iconPath: 'images/tab/home.png',
+            selectedIconPath: 'images/tab/home-active.png',
+            pagePath: 'pages/home/signin',
+            text: '签到'
+          },
+          {
+            iconPath: 'images/tab/user.png',
+            selectedIconPath: 'images/tab/user-active.png',
+            pagePath: 'pages/home/myproject',
+            text: '教师'
+          }
+        ]
+      }
+    };
+  }
+</script>

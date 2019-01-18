@@ -1,0 +1,56 @@
+<template>
+  <view class="container" wx:if="{{init}}">
+      <!-- 其他详细信息 -->
+      <view class="detail-box">
+        <view class="weui-cells weui-cells_after-title weui-cells-merge-top">
+          <view class="weui-cell">
+            <view class="weui-cell__hd">
+              <view class="weui-label"><text class="primary xl">{{title}}</text></view>
+            </view>
+          </view>
+        </view>
+        <view class="weui-cells weui-cells_after-title weui-cells-merge-top">
+          <view class="weui-cell">
+            <view class="weui-cell__bd">
+              <text class="xl">{{content}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import base from '../../mixins/base';
+  import input from '../../mixins/input';
+
+  export default class Admissibility extends wepy.page {
+    def = {
+      input: {
+        status: true
+      },
+      title: "",
+      content: "",
+      init: false,
+    };
+    data = {...this.def};
+    async onLoad (options) {
+      this.title=options.title;
+      this.content=options.content;
+      this.loaded();
+    };
+    methods = {
+    };
+
+
+    mixins = [base, input];
+    config = {
+      navigationBarTitleText: '编辑商品'
+    };
+  }
+</script>
+<style lang="scss">
+  @import "../../styles/variable";
+
+</style>

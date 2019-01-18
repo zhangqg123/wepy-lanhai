@@ -1,0 +1,313 @@
+<template>
+  <view class="container" wx:if="{{init}}">
+    <view class="list-box column">
+      <view class="title-box row-between">
+<!--        <text class="default xxl">{{flag+1}}、{{question.subject}}</text>  -->
+        <rich-text class="art-content" nodes="{{article}}" ></rich-text>
+      </view>
+    </view>
+<!--    <checkbox-group bindchange="checkboxChange">
+      <view class="list-box column">
+        <repeat for="{{answers}}" key="index" index="index" item="item">
+          <view>
+            <AnswerItem :answer.sync="item" ></AnswerItem>
+          
+          </view>
+        </repeat>
+       </view> 
+    </checkbox-group> -->
+ <view class="list-box column" wx:if="{{showAnswer}}">
+    <repeat for="{{answers}}" key="index" index="index" item="item">
+      <view class="item-box row" data-id="{{item.key}}" @tap = "parameterTap">
+        <image class="shop-icon icon-lg" src="{{item.checked?'/images/icons/status-6.png':'/images/icons/plus-white.png'}}" />
+        <text class="exam-title xxl {{item.checked?'checked_parameter':''}}" >{{item.content}}</text>  
+      </view>
+    </repeat>
+ </view>
+  <view class="list-box row" wx:if="{{!showAnswer}}">
+    <repeat for="{{answers}}" key="index" index="index" item="item">
+      <view class="item-box row" data-id="{{item.key}}" @tap = "parameterTap">
+        <image class="shop-icon icon-lg" src="{{item.checked?'/images/icons/status-6.png':'/images/icons/plus-white.png'}}" />
+        <text class="exam-title-2 xxl {{item.checked?'checked_parameter':''}}" >{{item.content}}</text>  
+      </view>
+    </repeat>
+ </view>
+
+ <!--
+    <radio-group class="radio-group" bindchange="radioChange">
+      <view class="list-box column" >
+        <repeat for="{{answers}}" key="index" index="index" item="item">
+          <view >
+            <AnswerItem :answer.sync="item" ></AnswerItem>
+          </view>
+        </repeat>
+      </view>
+    </radio-group>  -->
+  </view>
+  <view wx:if="{{showCard}}">
+    <view class="curdate-block">
+      <text class="xxl primary ml20"> 答题卡</text>
+    </view>
+    <view class="calendar-block">
+      <view 
+      class="calendar-day {{item.disabled?'color-gray':''}}  {{item.choose > -1 ?'color-sign':''}}" 
+      wx:for="{{questions}}" wx:key="key" wx:item="item" wx:for-index="index">{{index+1}}</view>
+    </view>
+  </view>
+    <!--操作栏-->
+    <QuestionBar @next.user="next" @preview.user="prev" @submit.user="sub" prevText="上一题" nextText="下一题" subText="提交" />
+
+
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import exam from '../../api/exam';
+  import signin from '../../api/signin';
+  import auth from '../../api/auth';
+  import base from '../../mixins/base';
+  import Tips from '../../utils/Tips';
+  import AnswerItem from '../../components/exam/answerItem';
+  import QuestionBar from '../../components/common/question_bar';
+
+  export default class ExamPage extends wepy.page {
+    def = {
+      examId:null,
+      questions:[],
+      question:null,
+      article:null,
+      answers:[],
+      showAnswer:false,
+      showCard:false,
+      flag: 0,
+      length: 0,
+      init: false
+    };
+    data = {...this.def};
+    async onLoad (option) {
+      try{
+        this.examId=option.examId;
+        const data = await exam.questionList(this.examId);
+        this.questions=data;
+        this.length=data.length;
+        this.flag=0;
+        this.renderQuestion(this.flag);
+      } catch (e) {
+        Tips.error(e.message);
+      } finally {
+        this.loaded();
+      }
+    };
+    renderQuestion(flag){
+      this.answers=[];
+//      var tmp=wepy.getStorageSync("questions");
+      var tmpQuestion=this.questions;
+      this.question=tmpQuestion[flag];
+      let content=this.question.subject;
+      this.article = content.replace(/(\<p)/gi, function ($0, $1) {
+              return {
+                "<p": '<p class="td" '
+              }[$1];
+            });
+      console.info("this.question",this.question);
+      
+      var choose=this.question.choose;
+      var tmpAnswers=[];
+      if(this.question.type=="normal"){
+        tmpAnswers=this.question.chooseAnswer.split("$$");
+        this.showAnswer=true;
+      }
+      if(this.question.type=="formula"){
+        tmpAnswers=["A","B","C","D"];
+        this.showAnswer=false;
+      }
+      console.info("tmpAnswers",tmpAnswers);
+      var list = [];
+      var label=["A. ","B. ","C. ","D. "];
+      for (let i = 0; i < tmpAnswers.length; i++) {
+        if(this.question.type=="normal"){
+          tmpAnswers[i]=label[i]+tmpAnswers[i]
+        }
+
+        var sku;
+        if (i==choose) {
+          sku = {
+            key: i,
+            content: tmpAnswers[i],
+            checked: 1
+          };
+        } else {
+          sku = {
+            key: i,
+            content: tmpAnswers[i],
+            checked: 0
+          };
+        }
+        list.push(sku);
+      }
+      this.answers=list;
+      console.info("this.answers",this.answers);
+      
+      this.loaded();
+    }
+    methods = {
+      // 参数点击响应事件
+      parameterTap: function (e) {
+        var this_checked = e.currentTarget.dataset.id;
+        var parameterList = this.answers; //获取Json数组
+        for (var i = 0; i < parameterList.length; i++) {
+          if (parameterList[i].key == this_checked) {
+            this.question.choose=this_checked;
+            console.info("this_checked",this_checked);
+            parameterList[i].checked = true;//当前点击的位置为true即选中
+          }
+          else {
+            parameterList[i].checked = false;//其他的位置为false
+          }
+        }
+      },
+//      checkboxChange: function(e) {
+//        console.log('checkbox change事件，value值为：', e.detail.value);
+//        this.question.choose=e.detail.value;
+//      },
+      // 获取该组件的id
+/*      radio:function(e){
+        console.log(e.currentTarget.dataset.id)
+      },
+      // 发货地址选择,获取用户选择的单选框的值
+      radioChange: function (e) {
+        this.question.choose=e.detail.value;
+      },  */
+      async sub() {
+        const temp = await this.questions.map(item => {
+            return {
+              id: item.id,
+              choose: item.choose,
+            }
+          });
+        var param=JSON.stringify(temp); 
+        this.$root.$navigate('/pages/exam/examScore',{param:param,examId:this.examId});
+/*        try{
+          var openId = auth.getConfig('openId');
+          if (openId == null) {
+            openId=await signin.jscode2session();
+            await auth.setConfig('openId', openId);
+          }
+          var data = await exam.subChoose(param,openId,this.examId);
+          Tips.modal('得分：'+data);
+        } catch (e) {
+          this.tips(e.message);
+        } finally {
+          this.loaded();
+        }*/
+      },
+      prev() {
+        if(this.flag>0){
+          this.flag--;          
+          this.renderQuestion(this.flag);
+        }
+      },
+      next() {
+        if(this.flag<this.length-1){
+          this.flag++;
+          this.renderQuestion(this.flag);
+        }else{
+          this.showCard=true;
+//          wepy.setStorage({key: "questions", data: this.questions});
+//          var tmp=wepy.getStorageSync("questions");
+//          console.info("this.questions",this.questions);
+        }
+      }
+    };
+    mixins = [base];
+    config = {
+      navigationBarTitleText: '考卷'
+    };
+    components = {
+      AnswerItem: AnswerItem,
+      QuestionBar: QuestionBar
+    };
+  }
+</script>
+
+<style lang="scss">
+  @import "../../styles/variable";
+  .title-box{
+    padding:15rpx 30rpx;
+  }
+  .list-box{
+    background: white;
+    border-bottom: $border;
+  }
+.color-red{
+  color: red;
+}
+
+.color-gray{
+  color: gray;
+}
+
+.color-sign{
+  background-color: #49b5f6;
+  border-radius: 50%;
+  color: #FFFFFF;
+}
+
+.cur-date{
+  text-decoration: underline;
+}
+
+.curdate-block{
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  width: 100%;
+}
+.curdate-block button{
+  margin: 0px 20px;
+  background-color: #49b5f6;
+  color: #FFFFFF;
+  width: 50px;
+  height: 30px;
+  line-height: 30px;
+}
+
+.calendar-block{
+  margin-top: 10px;
+  width: 350px;
+  display: flex;
+  flex-direction:row;
+  flex-wrap: wrap;
+  padding-left: 5px;
+}
+.calendar-day{
+  width: 45px;
+  height: 45px;
+  line-height: 45px;
+  margin-right: 5px;
+  margin-top: 10rpx;
+  text-align: center;
+  font-size: 18px;
+}
+
+.exam-title{
+  margin-left: 35rpx;
+  width: 90%;
+}
+.exam-title-2{
+  margin-left: 35rpx;
+//  width: 90%;
+}
+
+.checked_parameter{
+  color: #eea236;
+}
+.td {
+  display: flex;
+  align-items: center;
+//  justify-content: center;
+}
+.art-content {
+  word-break:break-all;
+}
+</style>

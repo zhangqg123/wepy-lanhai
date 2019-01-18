@@ -1,0 +1,126 @@
+<template>
+  <view class="container" wx:if="{{init}}">
+
+    <!--主内容区域-->
+    <view class="main-box row">
+        <!--分类侧边栏-->
+      <!--右侧滚动-->
+      <scroll-view scroll-y class="goods-box" bindscrolltolower="onReachBottom">
+        <!--指南列表-->
+        <view class="guide-list">
+          <repeat for="{{interviewTime}}" key="index" index="index" item="item">
+            <InterviewItem :interview.sync="item" @start.user="startInterview"/>
+          </repeat>
+        </view>
+        <Loadmore :page.sync="page" emptyText="暂无项目"/>
+      </scroll-view>
+
+    </view>
+    <!--操作栏-->
+<!--    <ActionBar @tap.user="add" okText="新增商品" cancelText="返回" /> -->
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import base from '../../mixins/base';
+  import pagination from '../../mixins/pagination';
+  import auth from '../../api/auth';
+  import Cache from '../../utils/Cache';
+  import Tips from '../../utils/Tips';
+  import applies from '../../api/applies';
+  import zwzx from '../../api/zwzx';
+  import InterviewItem from '../../components/apply/interview_item';
+  import ActionBar from '../../components/common/action_bar';
+  import Loadmore from '../../components/weui/loadmore';
+  import Event from '../../utils/Event';
+  export default class MyAudits extends wepy.page {
+    def = {
+      init: false,
+      display: 'false',
+      interviewTime: [],
+      param: []
+    };
+    data = {...this.def};
+    async onLoad (option) {
+      try {
+        this.param.applyId=option.id;
+        this.param.guideId=option.guideId;
+
+        const loginCode = auth.getConfig('login_code');
+        const status = auth.getConfig('status');
+        if (loginCode != null && status > 3 ) {
+//          const mdata = await Cache.management();
+//          const gdata = await Cache.guideIdName();
+          this.interviewTime = await applies.interviewTime(option.guideId);
+        }else{
+          if (loginCode != null && status == 3) {
+            this.$redirect('../login/realAuth');
+          }else{
+            this.$redirect('../login/index');
+          }
+        }
+      } catch (e) {
+      } finally {
+        this.loaded();
+      }
+    };
+
+    methods = {
+
+      async startInterview(info) {
+        if (!auth.isLogin()) {
+          this.$root.$navigate('/pages/login/index',{url:'/pages/apply/edit',id:info.id,guideId:info.guideId});
+        }else{
+          try {
+            this.param.date=info.date;
+            this.param.chooseTime=info.chooseTime;
+            const ret=await applies.startInterview(this.param);
+            Event.emit(Event.APPLY_LIST_UPDATE);
+            await Tips.success('预约成功');
+            wepy.navigateBack();
+          } catch (e) {
+            this.tips(e.message);
+          } finally {
+            this.loaded();
+          }
+        }
+      }
+    };
+    events = {};
+    components = {
+      InterviewItem: InterviewItem,
+      ActionBar: ActionBar,
+      Loadmore: Loadmore
+    };
+    mixins = [base, pagination];
+    config = {
+      navigationBarTitleText: '我要预约',
+      enablePullDownRefresh: true
+    };
+  }
+</script>
+
+<style lang="scss">
+  @import "../../styles/variable";
+  .main-box{
+    width: 100%;
+    position: absolute;
+    top: 5px;
+/*    bottom: 55px; */
+
+    .goods-box{
+      flex: 1;
+      height: 100%;
+      .goods-title{
+        height: 30px;
+        padding-left: 20rpx;
+        align-items: center;
+        border-bottom: $border;
+      }
+      .guide-list{
+        background-color: #FFF;
+      }
+    }
+  }
+</style>

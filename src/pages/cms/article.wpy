@@ -1,0 +1,126 @@
+<template lang="wxml">
+  <import src="../../wxParse/wxParse.wxml"/>
+  <view class="art-header" style="display:display">
+    <image class="art-img" src="{{imageHref}}"></image>
+<!--    <view class="art-title">{{detail.title}}</view> -->
+  </view>
+
+  <template is="wxParse" data="{{wxParseData:article.nodes}}"/>
+
+</template>
+
+
+<script>
+  import wepy from 'wepy';
+  import api from '../../api/api';
+  import base from '../../mixins/base';
+  import Tips from '../../utils/Tips';
+  import WxParse from '../../wxParse/wxParse.js';
+
+  export default class Article extends wepy.page {
+
+    def = {
+      domain: '',
+      isShow:'',
+      articlesId: 0,
+      detail: {},
+      imageHref :''
+    };
+    data = {...this.def};
+    async onLoad (options) {
+      try {
+        console.info("options",options);
+        this.articlesId = options.articlesId;
+        this.domain = api.apiAdUpload;
+        const articlesJson =  await api.queryOneArticles({
+          query: {
+            articlesId: this.articlesId
+          }
+        });
+        if (articlesJson.data.success == true) {
+          this.detail = articlesJson.data.obj;
+
+          wx.setNavigationBarTitle({
+            title: this.detail.title  //页面标题为动态参数
+          })
+          this.imageHref = this.domain + this.detail.imageHref;
+          console.log(this.imageHref);
+          WxParse.wxParse('article', 'html', this.detail.content, this,5);
+        } else {
+          Tips.error(articlesJson.data.msg);
+        }
+      } catch (e) {
+        Tips.error(e.message);
+      } finally {
+        this.loaded();
+      }
+    };
+
+
+    wxParseImgLoad(e) {
+    };
+    methods = {};
+    events = {};
+    mixins = [base];
+    config = {
+      "navigationBarTitleText": '',
+      "backgroundTextStyle": 'light',
+      "navigationBarBackgroundColor": '#fff',
+      "navigationBarTextStyle": 'black'
+    };
+    components = {};
+
+  }
+</script>
+
+
+<style lang="less">
+  @import "../../wxParse/wxParse.wxss";
+  .art-header {
+    position: relative;
+    width: 100%;
+    height: 219px;
+    color: #FFF;
+  }
+
+  .art-img {
+    width: 100%;
+    height: 219px;
+  }
+
+  .art-title {
+    position: absolute;
+    bottom: 36px;
+    left: 8px;
+    font-size: 16px;
+  }
+
+  .art-source {
+    position: absolute;
+    bottom: 8px;
+    font-size: 14px;
+    right: 8px;
+  }
+
+  .art-content {
+    font-size: 14px;
+    color: #616466;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 10px;
+    background-color: #FFF;
+    line-height: 1.5;
+  }
+
+  .big_images {
+    height: 100%;
+    display: block;
+    margin-bottom: 90rpx;
+    padding-left: 30rpx;
+    padding-right: 30rpx;
+    font-size:32rpx;
+    image {
+      width:100%;
+    }
+  }
+</style>

@@ -1,0 +1,217 @@
+<template>
+<view class="container">
+  <!--当前日期-->
+  <view class="curdate-block">
+    <button bindtap='preMonth'>{{signData.preMonth}}</button>
+   <text class="xxl primary"> {{signData.year}}年{{signData.month}}月</text>
+    <button bindtap='nextMonth'>{{signData.nextMonth}}</button>
+  </view>
+  
+  <!-- 星期-->
+  <view class="calendar-block">
+    <view class="calendar-day {{(item == '日' || item == '六')?'color-red':'color-gray'}}" wx:for="{{signData.days}}" wx:key="key" wx:item="item" wx:for-index="index">{{item}}</view>
+  </view>
+
+  <!-- 日历-->
+  <view class="calendar-block">
+    <view 
+    class="calendar-day {{item.disabled?'color-gray':''}}  {{item.sign?'color-sign':''}}" 
+    wx:for="{{signData.calendars}}" wx:key="key" wx:item="item" wx:for-index="index">{{item.date}}</view>
+  </view>
+
+  <!-- 签到 -->
+  <view class="row-center">
+    <button wx:if="{{signData.showSign}}" class="sign-btn" bindtap='doSign'>签到</button>
+  </view>
+
+</view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import Cache from '../../utils/Cache';
+  import auth from '../../api/auth';
+  import signin from '../../api/signin';
+  import base from '../../mixins/base';
+  import Tips from '../../utils/Tips';
+  import MenuItem from '../../components/zwzx/item';
+  import Placeholder from '../../components/common/placeholder';
+  import ActionBar from '../../components/common/action_bar';
+
+  export default class SignIn extends wepy.page {
+    def = {
+      signData:null,
+      menus: [],
+      init: false
+    };
+    data = {...this.def};
+    async onLoad () {
+      var openId = auth.getConfig('openId');
+      if (openId == null) {
+        openId=await signin.jscode2session();
+        await auth.setConfig('openId', openId);
+      }
+      console.info("openId",openId);
+      var nowDate = new Date();//当前日期
+      const data=await signin.loadCalendar(nowDate);//加载日历
+      this.signData=data;
+      console.info("this.signData-----",this.signData);
+
+/*      signin.jscode2session(res=>{
+        var nowDate = new Date();//当前日期
+        signin.initCalendar(nowDate);//加载日历
+      }); */
+      this.loaded();
+    };
+
+    //计算两点位置距离  129.521713,42.926587
+
+    getDistance (lat1, lng1, lat2, lng2) {
+      lat1 = lat1 || 0;
+      lng1 = lng1 || 0;
+      lat2 = lat2 || 0;
+      lng2 = lng2 || 0;
+   
+      var rad1 = lat1 * Math.PI / 180.0;
+      var rad2 = lat2 * Math.PI / 180.0;
+      var a = rad1 - rad2;
+      var b = lng1 * Math.PI / 180.0 - lng2 * Math.PI / 180.0;
+   
+      var r = 6378137;
+      var distance = r * 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2) + Math.cos(rad1) * Math.cos(rad2) * Math.pow(Math.sin(b / 2), 2)));
+   
+      /*if (distance > 1000){
+        distance = Math.round(distance / 1000);
+      }*/
+   
+      return distance;
+    }
+
+    methods = {
+      // 进入部门
+      async enter(menuId) {
+        this.$root.$navigate('/pages/guide/guide_list', {management: menuId});
+      },
+      async preMonth() {
+        var dataYear = this.signData.year;
+        var dataMonth = this.signData.month - 2;//月是从0开始的
+        const data =await signin.preMonth(dataYear,dataMonth);   
+//        const data=await signin.initCalendar(paramDate);//加载日历
+        this.signData=data;
+        console.info("this.signData-----",this.signData);
+
+        this.loaded();
+      },
+      async nextMonth() {
+        var dataYear = this.signData.year;
+        var dataMonth = this.signData.month;//月是从0开始的
+        const data =await signin.nextMonth(dataYear,dataMonth);   
+        this.signData=data;
+        this.loaded();
+      },
+      async doSign() {
+        const res = await wepy.getLocation();
+        console.info("res============",res);
+        const latitude = res.latitude;//纬度
+        const longitude = res.longitude;//经度 129.508256, 42.918363
+        var distance=this.getDistance(latitude,longitude,42.918363,129.508256);
+        console.info("distance============",distance);
+        if(distance>100){
+          await Tips.modal("超出有效距离");
+        }else{
+          const data =await signin.doSign();   
+          console.info("data==",data);
+          if(data!=false&&data!="already"){
+            this.signData=data;
+            await Tips.success('签到成功！');
+          }else{
+            if(data=="already"){
+              await Tips.alert('已签到');
+            }else{
+              await Tips.error("失败");
+            }
+          }
+          this.loaded();                    
+        }
+      }
+    };
+
+    mixins = [base];
+    config = {
+      navigationBarTitleText: '签到'
+    };
+    components = {
+      MenuItem: MenuItem,
+      Placeholder: Placeholder,
+      ActionBar: ActionBar
+    };
+  }
+</script>
+
+<style lang="scss">
+  @import "../../styles/variable";
+
+.color-red{
+  color: red;
+}
+
+.color-gray{
+  color: gray;
+}
+
+.color-sign{
+  background-color: #49b5f6;
+  border-radius: 50%;
+  color: #FFFFFF;
+}
+
+.cur-date{
+  text-decoration: underline;
+}
+
+.curdate-block{
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  width: 100%;
+}
+.curdate-block button{
+  margin: 0px 20px;
+  background-color: #49b5f6;
+  color: #FFFFFF;
+  width: 50px;
+  height: 30px;
+  line-height: 30px;
+}
+
+.calendar-block{
+  margin-top: 10px;
+  width: 350px;
+  display: flex;
+  flex-direction:row;
+  flex-wrap: wrap;
+  padding-left: 5px;
+}
+.calendar-day{
+  width: 45px;
+  height: 45px;
+  line-height: 45px;
+  margin-right: 5px;
+  margin-top: 10rpx;
+  text-align: center;
+  font-size: 18px;
+}
+
+.sign-btn{
+  margin-top: 10px;
+  width: 100px;
+  height: 40px;
+  line-height: 40px;
+  background-color: #49b5f6;
+  color: #FFFFFF;
+  letter-spacing: 5px;
+  padding: 0px;
+}
+
+
+</style>

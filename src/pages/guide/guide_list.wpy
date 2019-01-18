@@ -1,0 +1,168 @@
+<template>
+  <view class="container" wx:if="{{init}}">
+    <!--TAB 页-->
+    <ZanTab :tab="tab" fixed="0" @change.user="change"/>
+
+    <!--主内容区域-->
+    <view class="main-box row">
+        <!--分类侧边栏-->
+      <!--右侧滚动-->
+      <scroll-view scroll-y class="goods-box" bindscrolltolower="onReachBottom">
+        <!--分类名称
+        <view class="goods-title row">
+          <text class="weak">{{selectedCategoryName}}</text>
+        </view> -->
+        <!--指南列表-->
+        <view class="guide-list">
+          <repeat for="{{page.list}}" key="index" index="index" item="item">
+            <GuideItem :guide.sync="item"/>
+          </repeat>
+        </view>
+        <Loadmore :page.sync="page" emptyText="暂无项目"/>
+      </scroll-view>
+
+    </view>
+    <!--操作栏-->
+<!--    <ActionBar @tap.user="add" okText="新增商品" cancelText="返回" /> -->
+  </view>
+  <view wx:if="{{display == 'true'}}">
+    <SideCategory :display.sync="display" :tab.sync="categories" @change.user="switchTab"  />    
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import base from '../../mixins/base';
+  import pagination from '../../mixins/pagination';
+  import guides from '../../api/guides';
+  import GuideItem from '../../components/guide/guide_item';
+  import ZanTab from '../../components/zanui/tab';
+  import SideCategory from '../../components/manusl/side_category';
+  import ActionBar from '../../components/common/action_bar';
+  import Placeholder from '../../components/common/placeholder';
+  import Loadmore from '../../components/weui/loadmore';
+  import Event from '../../utils/Event';
+  import Cache from '../../utils/Cache';
+  import zwzx from '../../api/zwzx';
+  export default class GuideList extends wepy.page {
+    def = {
+      init: false,
+      display: 'false',
+      page: {
+        list: []
+      },
+      tab: {
+        list: [
+          {id: 'all', title: '全部'},
+          {id: 'heat', title: '热度'},
+          {id: 'run', title: '跑动'},
+          {id: 'category', title: '分类'}
+        ],
+        selectedId: 'all',
+        scroll: false
+      },
+      categories: []
+    };
+    data = {...this.def};
+    async onLoad (option) {
+      console.info("option",option);
+      await this.getManagement();
+      if(option!=null&&option.management!=null){
+        this.categories.selectedId = option.management;
+      }
+      this.page = guides.guideList(this.categories.list);
+      await this.next();
+      Event.listen(Event.GOODS_LIST_UPDATE, this.updateApply.bind(this), this);
+      this.loaded();
+    };
+    // 获取分页参数
+    params() {
+      return {
+        guide_status: this.tab.selectedId,
+        category_id: this.categories.selectedId
+      };
+    }
+    async updateApply(){
+      console.info("updateApply================");
+    }
+    // 获取部门
+    async getManagement() {
+      // 加载部门
+      this.categories = await Cache.management();
+      
+      if (this.categories && this.categories.list && this.categories.list.length > 0) {
+        this.categories.selectedId = "all";
+      }
+       this.loaded();
+    }
+    methods = {
+      // 点击分类
+      switchTab(selectedId) {
+        console.info("categery selectedId",selectedId);
+        this.reload();
+      },
+/*      add() {
+        this.$navigate(`edit?mode=create&categoryId=${this.categories.selectedId}`);
+      },
+*/
+      change() {
+
+        if(this.tab.selectedId=="category"){
+          this.display="true";
+        }else{
+          this.categories.selectedId="";
+//          if(this.tab.selectedId!="all"){
+            this.reload();          
+//          }
+        }
+      }
+    };
+    computed = {
+      selectedCategoryName() {
+        if (this.init && this.categories && this.categories.list && this.categories.list.length > 0) {
+          const selectedId = this.categories.selectedId;
+          const selectedCategory = this.categories.list.find(item => item.id == selectedId);
+          return selectedCategory ? selectedCategory.title : "全部";
+        }
+      }
+    };
+    events = {};
+    components = {
+      ZanTab: ZanTab,
+      Placeholder: Placeholder,
+      GuideItem: GuideItem,
+      ActionBar: ActionBar,
+      Loadmore: Loadmore,
+      SideCategory: SideCategory
+    };
+    mixins = [base, pagination];
+    config = {
+      navigationBarTitleText: '办事大厅',
+      enablePullDownRefresh: true
+    };
+  }
+</script>
+
+<style lang="scss">
+  @import "../../styles/variable";
+  .main-box{
+    width: 100%;
+    position: absolute;
+    top: 43px;
+/*    bottom: 55px; */
+
+    .goods-box{
+      flex: 1;
+      height: 100%;
+      .goods-title{
+        height: 30px;
+        padding-left: 20rpx;
+        align-items: center;
+        border-bottom: $border;
+      }
+      .guide-list{
+        background-color: #FFF;
+      }
+    }
+  }
+</style>

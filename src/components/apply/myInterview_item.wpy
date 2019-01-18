@@ -1,0 +1,117 @@
+<template>
+  <view class="item-box column" >
+    <view class="goods-box row">
+      <view class="info-box column">
+        <view class="title-box">
+          <text class="xxl primary">{{apply.guideName}}</text>
+        </view>
+        <view class="count-box bg-white" wx:if="{{apply.applyStatus==2}}">
+          <text class="muted mr20 sm">决定机构</text>
+          <text class="muted ml20 sm">{{apply.managementName}}</text>
+        </view>
+        <view class="count-box bg-white" wx:if="{{apply.applyStatus==3}}">
+          <text class="muted mr20 sm">预约时间</text>
+          <text class="muted ml20 sm">{{apply.date}}</text>
+        </view>
+        <view class="count-box row-around bg-white">
+          <view class="count-item">
+            <view wx:if="{{apply.applyStatus==2}}">
+              <text class="muted mr20 sm">申报状态</text>
+              <text class="major muted ml20 sm">预审完成</text>
+            </view>
+            <view wx:if="{{apply.applyStatus==3}}">
+              <text class="muted mr20 sm">申报状态</text>
+              <text class="major muted ml20 sm">已预约</text>
+            </view>
+          </view>
+          <view class="count-item" >
+            <view class="small label primary"  @tap = "startApply({{apply.id}},{{apply.guideId}})" wx:if="{{apply.applyStatus==2}}">
+              <image class="icon-s" src="/images/icons/zw8.png"/>申请预约
+            </view>
+            <view class="small label disabled" wx:if="{{apply.applyStatus==3}}">
+              <image class="icon-s" src="/images/icons/up-arrow2.png"/>申请预约
+            </view>
+            <view class="small label primary"  @tap = "cancelInterview({{apply.id}},{{apply.interviewId}})" wx:if="{{apply.applyStatus==3}}">
+              <image class="icon-s" src="/images/icons/zw8.png"/>取消预约
+            </view>
+            <view class="small label disabled" wx:if="{{apply.applyStatus==2}}">
+              <image class="icon-s" src="/images/icons/up-arrow2.png"/>取消预约
+            </view>
+         </view>
+        </view>
+
+      </view>
+    </view>
+   </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import auth from '../../api/auth';
+  export default class MyInterviewItem extends wepy.component {
+    props = {
+      apply: {}
+    };
+    data = {};
+    methods = {
+      async startApply(id,guideId) {
+        this.$emit('start',{id,guideId});
+      },
+      async cancelInterview(applyId,interviewId) {
+        this.$emit('cancel',{applyId,interviewId});
+      }
+
+    };
+  }
+</script>
+
+<style lang="scss">
+  @import "../../styles/variable";
+
+  /*统计区域*/
+  .count-box{
+    padding: 10rpx 0;
+    text{font-size: $text-lg};
+/*    border-bottom: $border; */
+
+    .count-item{
+      width: 375rpx;
+    }
+  }  
+  .item-box{
+    background-color: #FFF;
+    position: relative;
+    border-bottom: $border;
+    padding: 10rpx;
+    .item-action{
+      border-top: $border;
+      height: 90rpx;
+    }
+
+    .goods-box{
+      padding-bottom: 10rpx;
+      border-bottom: 1px dashed #dfdfdf;
+      $image-size: 200rpx;
+      border-radius: 8px;
+
+/*      .goods-image{
+        height: $image-size;
+        width: $image-size;
+        border: $border;
+      }
+*/
+      .info-box{
+        justify-content: space-between;
+        height: $image-size;
+        flex: 1;
+        margin-left: 20rpx;
+        .bgcolor{
+          background-color: $color-bg-body;
+        }
+        .title{
+          line-height: 30rpx;
+        }
+      }
+    }
+  }
+</style>

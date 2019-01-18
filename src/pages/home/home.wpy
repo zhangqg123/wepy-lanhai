@@ -89,21 +89,17 @@
         const upload = data.apiAdUpload;
         this.param.adUpload = upload;
 
-        const json = await api.getMenuList();
-        this.menu = json.data;
+        const json = await exam.getMenuList();
+        this.menu = json;
         //初始化加载第一个栏目文章信息
         var columnId = this.menu[0].id;
         wx.setNavigationBarTitle({
           title: this.menu[0].name  //页面标题为动态参数
         })
         this.active = columnId;
-        const arrayJson = await api.getArticlesList({
-          query: {
-            columnId: columnId
-          }
-        });
-        if (arrayJson.data.success == true) {
-          this.array = arrayJson.data.obj.list.results;
+        const arrayJson = await exam.getArticlesList(columnId);
+        if (arrayJson.success == true) {
+          this.array = arrayJson.obj.list.results;
           console.info("this.array",this.array);
         } else {
           Tips.error(arrayJson.data.msg);

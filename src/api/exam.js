@@ -18,6 +18,16 @@ export default class exam extends base {
     data.apiAdUpload=`${this.apiAdUpload}`;
     return data;
   }
+  static async getMenuList () {
+    const url = `${this.baseUrl2}/work/cms/menu.do`;
+    const data=await this.get(url);
+    return data;
+  }
+  static async getArticlesList (columnId) {
+    const url = `${this.baseUrl2}/work/cms/articles.do?columnId=${columnId}`;
+    const data=await this.get(url);
+    return data;
+  }
   
   static examList(categories) {
     const url = `${this.baseUrl2}/work/exam/examList.do`;

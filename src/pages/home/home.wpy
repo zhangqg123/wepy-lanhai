@@ -49,7 +49,6 @@
 
 <script>
   import wepy from 'wepy';
-  import api from '../../api/api';
   import exam from '../../api/exam';
   import base from '../../mixins/base';
   import Event from '../../utils/Event';
@@ -86,7 +85,7 @@
         } else {
           Tips.error(data.msg);
         }
-        const upload = data.apiAdUpload;
+        const upload = wepy.$instance.globalData.baseUrl2+'/upload/img/cms/';
         this.param.adUpload = upload;
 
         const json = await exam.getMenuList();
@@ -134,9 +133,9 @@
       return Tips.share(title, url, title);
     }
     methods = {
-      toArticlesContent(articlesId) {
+      toArticlesContent(articleId) {
         wx.navigateTo({
-          url: '../cms/article?articlesId=' + articlesId
+          url: '../cms/article?articleId=' + articleId
         });
       },
       async scan() {

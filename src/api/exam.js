@@ -7,6 +7,7 @@ const sign = require('../utils/sign.js');
 var appId=wepy.$instance.globalData.appId;
 
 export default class exam extends base {
+
   static async queryScore (openId,examId) {
     const url = `${this.baseUrl2}/work/exam/queryScore.do?openId=${openId}&examId=${examId}`;
     const data=await this.get(url);
@@ -15,7 +16,6 @@ export default class exam extends base {
   static async queryAllAdImages () {
     const url = `${this.baseUrl2}/work/cms/queryAllAdImages.do`;
     const data=await this.get(url);
-    data.apiAdUpload=`${this.apiAdUpload}`;
     return data;
   }
   static async getMenuList () {
@@ -25,6 +25,12 @@ export default class exam extends base {
   }
   static async getArticlesList (columnId) {
     const url = `${this.baseUrl2}/work/cms/articles.do?columnId=${columnId}`;
+    const data=await this.get(url);
+    return data;
+  }
+  static async queryOneArticles (articleId) {
+    const url = `${this.baseUrl2}/work/cms/queryOneArticles.do?articleId=${articleId}`;
+    console.info("articleId",articleId);
     const data=await this.get(url);
     return data;
   }

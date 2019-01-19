@@ -12,7 +12,8 @@
 
 <script>
   import wepy from 'wepy';
-  import api from '../../api/api';
+//  import api from '../../api/api';
+  import exam from '../../api/exam';
   import base from '../../mixins/base';
   import Tips from '../../utils/Tips';
   import WxParse from '../../wxParse/wxParse.js';
@@ -20,7 +21,6 @@
   export default class Article extends wepy.page {
 
     def = {
-      domain: '',
       isShow:'',
       articlesId: 0,
       detail: {},
@@ -30,24 +30,20 @@
     async onLoad (options) {
       try {
         console.info("options",options);
-        this.articlesId = options.articlesId;
-        this.domain = api.apiAdUpload;
-        const articlesJson =  await api.queryOneArticles({
-          query: {
-            articlesId: this.articlesId
-          }
-        });
-        if (articlesJson.data.success == true) {
-          this.detail = articlesJson.data.obj;
+        this.articleId = options.articleId;
+        const articlesJson = await exam.queryOneArticles(this.articleId);
+        console.info("articlesJson",articlesJson);
+        if (articlesJson.success == true) {
+          this.detail = articlesJson.obj;
 
           wx.setNavigationBarTitle({
             title: this.detail.title  //页面标题为动态参数
           })
-          this.imageHref = this.domain + this.detail.imageHref;
+          this.imageHref = wepy.$instance.globalData.baseUrl2+'/upload/img/cms/' + this.detail.imageHref;
           console.log(this.imageHref);
           WxParse.wxParse('article', 'html', this.detail.content, this,5);
         } else {
-          Tips.error(articlesJson.data.msg);
+          Tips.error(articlesJson.msg);
         }
       } catch (e) {
         Tips.error(e.message);

@@ -104,9 +104,9 @@ export default class Tips {
   static error (title, onHide) {
     wx.showToast({
       title: title,
-      image: '/images/icons/error.png',
+//      image: '/images/icons/error.png',
       mask: true,
-      duration: 1500
+      duration: 5000
     });
     // 隐藏结束回调
     if (onHide) {

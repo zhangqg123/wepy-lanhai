@@ -21,7 +21,7 @@
     </view>
   </view>
     <!--操作栏-->
-    <ActionBar @tap.user="retExamList" okText="考试列表" cancelText="返回" /> 
+    <ActionBar @tap.user="retExamList" @answer.user="examAnswer" examListText="考试列表" answerText="查看答案" /> 
 
 </view>
 </template>
@@ -37,12 +37,14 @@
 
   export default class ExamScore extends wepy.page {
     def = {
+      examId:null,
       rightData:null,
       init: false
     };
     data = {...this.def};
     async onLoad (option) {
       try{
+        this.examId=option.examId;
         var openId = auth.getConfig('openId');
         if (openId == null) {
           openId=await signin.jscode2session();
@@ -65,6 +67,9 @@
         console.log("retun examList");
         this.$switch('../home/examList');
       },
+      examAnswer() {
+        this.$root.$navigate('/pages/exam/examAnswer', {examId: this.examId});        
+      }
     };
 
     mixins = [base];

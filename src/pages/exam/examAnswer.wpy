@@ -1,0 +1,236 @@
+<template>
+  <view class="container" wx:if="{{init}}">
+    <view class="list-box column">
+      <view class="title-box row-between">
+<!--        <text class="default xxl">{{flag+1}}、{{question.subject}}</text>  -->
+        <rich-text class="art-content" nodes="{{article}}" ></rich-text>
+      </view>
+    </view>
+
+ <view class="list-box column" wx:if="{{showAnswer}}">
+    <repeat for="{{answers}}" key="index" index="index" item="item">
+      <view class="item-box row" data-id="{{item.key}}" >
+        <image class="shop-icon icon-lg" src="{{item.checked?'/images/icons/status-6.png':'/images/icons/plus-white.png'}}" />
+        <text class="exam-title xxl {{item.checked?'checked_parameter':''}}" >{{item.content}}</text>  
+      </view>
+    </repeat>
+ </view>
+  <view class="list-box row" wx:if="{{!showAnswer}}">
+    <repeat for="{{answers}}" key="index" index="index" item="item">
+      <view class="item-box row" data-id="{{item.key}}" >
+        <image class="shop-icon icon-lg" src="{{item.checked?'/images/icons/status-6.png':'/images/icons/plus-white.png'}}" />
+        <text class="exam-title-2 xxl {{item.checked?'checked_parameter':''}}" >{{item.content}}</text>  
+      </view>
+    </repeat>
+ </view>
+
+
+  </view>
+
+    <!--操作栏-->
+    <QuestionBar @next.user="next" @preview.user="prev" @submit.user="ret" prevText="上一题" nextText="下一题" subText="返回" />
+
+
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import exam from '../../api/exam';
+  import signin from '../../api/signin';
+  import auth from '../../api/auth';
+  import base from '../../mixins/base';
+  import Tips from '../../utils/Tips';
+  import AnswerItem from '../../components/exam/answerItem';
+  import QuestionBar from '../../components/common/question_bar';
+
+  export default class ExamAnswer extends wepy.page {
+    def = {
+      examId:null,
+      questions:[],
+      question:null,
+      article:null,
+      answers:[],
+      showAnswer:false,
+      showCard:false,
+      flag: 0,
+      length: 0,
+      init: false
+    };
+    data = {...this.def};
+    async onLoad (option) {
+      try{
+        this.examId=option.examId;
+        const data = await exam.questionList(this.examId);
+        this.questions=data;
+        this.length=data.length;
+        this.flag=0;
+        this.renderQuestion(this.flag);
+      } catch (e) {
+        Tips.error(e.message);
+      } finally {
+        this.loaded();
+      }
+    };
+    renderQuestion(flag){
+      this.answers=[];
+      var tmpQuestion=this.questions;
+      this.question=tmpQuestion[flag];
+      let content=this.question.subject;
+      this.article = content.replace(/(\<p)/gi, function ($0, $1) {
+              return {
+                "<p": '<p class="td" '
+              }[$1];
+            });
+      console.info("this.question",this.question);
+      
+//      var choose=this.question.choose;
+      var choose=this.question.rightAnswer-1;
+      console.info("choose",choose);
+      var tmpAnswers=[];
+      if(this.question.type=="normal"){
+        tmpAnswers=this.question.chooseAnswer.split("$$");
+        this.showAnswer=true;
+      }
+      if(this.question.type=="formula"){
+        tmpAnswers=["A","B","C","D"];
+        this.showAnswer=false;
+      }
+      console.info("tmpAnswers",tmpAnswers);
+      var list = [];
+      var label=["A. ","B. ","C. ","D. "];
+      for (let i = 0; i < tmpAnswers.length; i++) {
+        if(this.question.type=="normal"){
+          tmpAnswers[i]=label[i]+tmpAnswers[i]
+        }
+
+        var sku;
+        if (i==choose) {
+          sku = {
+            key: i,
+            content: tmpAnswers[i],
+            checked: 1
+          };
+        } else {
+          sku = {
+            key: i,
+            content: tmpAnswers[i],
+            checked: 0
+          };
+        }
+        list.push(sku);
+      }
+      this.answers=list;
+      console.info("this.answers",this.answers);
+      
+      this.loaded();
+    }
+    methods = {
+
+      async ret() {
+        this.$switch('/pages/home/examList');
+      },
+      prev() {
+        if(this.flag>0){
+          this.flag--;          
+          this.renderQuestion(this.flag);
+        }
+      },
+      next() {
+        if(this.flag<this.length-1){
+          this.flag++;
+          this.renderQuestion(this.flag);
+        }
+      }
+    };
+    mixins = [base];
+    config = {
+      navigationBarTitleText: '考卷'
+    };
+    components = {
+      AnswerItem: AnswerItem,
+      QuestionBar: QuestionBar
+    };
+  }
+</script>
+
+<style lang="scss">
+  @import "../../styles/variable";
+  .title-box{
+    padding:15rpx 30rpx;
+  }
+  .list-box{
+    background: white;
+    border-bottom: $border;
+  }
+.color-red{
+  color: red;
+}
+
+.color-gray{
+  color: gray;
+}
+
+.color-sign{
+  background-color: #49b5f6;
+  border-radius: 50%;
+  color: #FFFFFF;
+}
+
+.cur-date{
+  text-decoration: underline;
+}
+
+.curdate-block{
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  width: 100%;
+}
+.curdate-block button{
+  margin: 0px 20px;
+  background-color: #49b5f6;
+  color: #FFFFFF;
+  width: 50px;
+  height: 30px;
+  line-height: 30px;
+}
+
+.calendar-block{
+  margin-top: 10px;
+  width: 350px;
+  display: flex;
+  flex-direction:row;
+  flex-wrap: wrap;
+  padding-left: 5px;
+}
+.calendar-day{
+  width: 45px;
+  height: 45px;
+  line-height: 45px;
+  margin-right: 5px;
+  margin-top: 10rpx;
+  text-align: center;
+  font-size: 18px;
+}
+
+.exam-title{
+  margin-left: 35rpx;
+  width: 90%;
+}
+.exam-title-2{
+  margin-left: 35rpx;
+//  width: 90%;
+}
+
+.checked_parameter{
+  color: #eea236;
+}
+.td {
+  display: flex;
+  align-items: center;
+//  justify-content: center;
+}
+.art-content {
+  word-break:break-all;
+}
+</style>

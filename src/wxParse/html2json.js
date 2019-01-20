@@ -12,8 +12,8 @@
  * detail : http://weappdev.com/t/wxparse-alpha0-1-html-markdown/184
  */
  
-var server_url="http://192.168.0.199:8080"
-//var server_url="https://hunchun.zqgzht.com"
+//var server_url="http://192.168.0.199:8080"
+var server_url="https://hunchun.zqgzht.com"
 
 var __placeImgeUrlHttps = "https";
 var __emojisReg = '';
@@ -150,8 +150,8 @@ function html2json(html, bindName) {
             //对img添加额外数据
             if (node.tag === 'img') {
                 node.imgIndex = results.images.length;
-//              var imgUrl = node.attr.src;
-                var imgUrl = server_url+node.attr.src;
+              var imgUrl = node.attr.src;
+//                var imgUrl = server_url+node.attr.src;
                 if (imgUrl[0] == '') {
                     imgUrl.splice(0, 1);
                 }
@@ -184,7 +184,8 @@ function html2json(html, bindName) {
 
             //临时记录source资源
             if(node.tag === 'source'){
-                results.source = server_url+ node.attr.src;
+//                results.source = server_url+ node.attr.src;
+                results.source = node.attr.src;
             }
 
             if (unary) {

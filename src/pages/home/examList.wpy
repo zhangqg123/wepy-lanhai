@@ -15,7 +15,7 @@
         <!--指南列表-->
         <view class="guide-list">
           <repeat for="{{page.list}}" key="index" index="index" item="item">
-            <ExamListItem :exam.sync="item" @query.user="queryScore"/>
+            <ExamListItem :exam.sync="item" @queryAnswer.user="queryAnswer" @queryScore.user="queryScore" />
           </repeat>
         </view>
         <Loadmore :page.sync="page" emptyText="暂无项目"/>
@@ -109,6 +109,21 @@
         console.info("categery selectedId",selectedId);
         this.reload();
       },
+      async queryAnswer(info) {
+          try {
+          var openId = auth.getConfig('openId');
+          var data=await exam.queryScore(openId,info.examId);
+          if(data!="fail"){
+            this.$root.$navigate('/pages/exam/examAnswer', {examId: info.examId});
+          }else{
+            Tips.modal("先考试，再看答案");
+          }
+        } catch (e) {
+          Tips.error(e.message);
+        } finally {
+          this.loaded();
+        }
+      },
       async queryScore(info) {
         try{
           var openId = auth.getConfig('openId');
@@ -130,6 +145,7 @@
           this.loaded();
         }
       },
+
       change() {
 
         if(this.tab.selectedId=="category"){

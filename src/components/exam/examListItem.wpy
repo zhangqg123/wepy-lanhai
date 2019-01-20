@@ -35,6 +35,9 @@
           <button  class="my-mini-btn mr20" type="primary" @tap="queryScore({{exam.id}})" >
             <image class="icon-s" src="/images/icons/zw8.png"/>查询成绩
           </button>
+          <button  class="my-mini-btn mr20" type="primary" @tap="queryAnswer({{exam.id}})" >
+            <image class="icon-s" src="/images/icons/zw8.png"/>查看答案
+          </button>
         </view>
       </view>
     </view>
@@ -54,7 +57,10 @@
         this.$root.$navigate('/pages/exam/examPage', {examId: examId});
       },
       async queryScore(examId) {
-        this.$emit('query', {examId:examId});
+        this.$emit('queryScore', {examId:examId});
+      },
+      async queryAnswer(examId) {
+        this.$emit('queryAnswer', {examId:examId});
       },
     };
   }

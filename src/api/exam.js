@@ -7,6 +7,11 @@ const sign = require('../utils/sign.js');
 var appId=wepy.$instance.globalData.appId;
 
 export default class exam extends base {
+  static async queryAnswer (openId,examId) {
+    const url = `${this.baseUrl2}/work/exam/queryAnswer.do?openId=${openId}&examId=${examId}`;
+    const data=await this.get(url);
+    return data;
+  }
 
   static async queryScore (openId,examId) {
     const url = `${this.baseUrl2}/work/exam/queryScore.do?openId=${openId}&examId=${examId}`;

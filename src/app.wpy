@@ -97,8 +97,6 @@
     config = {
       pages: [
         'pages/home/home',
-        'pages/home/menu',
-        'pages/home/exam',
         'pages/home/signin',
         'pages/home/myproject',
         'pages/home/examList',
@@ -116,9 +114,9 @@
         'pages/apply/myApplies',
         'pages/apply/myAudits',
         'pages/apply/myWorks',
-//        'pages/apply/waitInterviews',
-        'pages/exam/examScore',
+        'pages/exam/examAnswer',
         'pages/exam/examPage',
+        'pages/exam/examScore',
         'pages/guide/commonDetail',
         'pages/guide/guide',
         'pages/guide/guide_list'

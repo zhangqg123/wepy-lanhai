@@ -39,6 +39,13 @@ export default class exam extends base {
     const data=await this.get(url);
     return data;
   }
+  static articleList(columnId) {
+    const url = `${this.baseUrl2}/work/cms/articleList.do?columnId=${columnId}`;
+    console.info("url====",url);
+    return new Page(url, this._processArticleList.bind(this));
+  }
+  static _processArticleList(item) {
+  }
   
   static examList(categories) {
     const url = `${this.baseUrl2}/work/exam/examList.do`;

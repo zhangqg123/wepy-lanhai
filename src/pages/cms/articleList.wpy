@@ -1,7 +1,7 @@
 <template>
   <view class="container">
   <view class="news-item-container">
-  <repeat for="{{atricles}}" key="index" index="index" item="item">
+  <repeat for="{{page.list}}" key="index" index="index" item="item">
   <view class="news-item" @tap="toArticlesInfo({{item.id}},{{item.imageHref}})">
   <view class="news-item-left"><text class="xxl">{{item.title}}</text></view>
   <view class="news-item-right"><image class="news-image" src="{{domain + item.imageHref}}"></image></view>
@@ -19,12 +19,15 @@
   import exam from '../../api/exam';
   import base from '../../mixins/base';
   import Event from '../../utils/Event';
+  import pagination from '../../mixins/pagination';
   import Tips from '../../utils/Tips';
 
   export default class ArticleList extends wepy.page {
     def = {
-      atricles: [],
       columnId: '',
+      page: {
+        list: []
+      },
       //总页数
       totalPage: 1,
       //当前页
@@ -41,47 +44,13 @@
 
         this.domain = wepy.$instance.globalData.baseUrl2+'/upload/img/cms/';
         console.info("this.domain",this.domain);
-        const arrayJson = await exam.getArticlesList(this.columnId);
-        console.info("arrayJson",arrayJson);
-
-        if (arrayJson.success == true) {
-          this.atricles = arrayJson.obj.list.results;
-        } else {
-          Tips.error(arrayJson.data.msg);
-        } 
+        const arrayJson = await exam.articleList(this.columnId);
+        this.page = exam.articleList(this.columnId);
+        await this.next();
       } catch (e) {
         Tips.error(e.message);
       } finally {
         this.loaded();
-      }
-    };
-    /**
-     * 页面上拉触底事件的处理函数
-     * @returns {Promise<void>}
-     */
-    async onReachBottom() {
-      // 当前页+1
-      var pageNumber = this.pageNumber + 1;
-      this.pageNumber = pageNumber;
-      if (pageNumber <= this.totalPage) {
-        wx.showLoading({
-          title: '加载中',
-        })
-        // 请求后台，获取下一页的数据。
-        const arrayJson = await exam.getArticlesList({
-          query: {
-            columnId: this.columnId,
-            pageNumber: pageNumber
-          }
-        });
-        if (arrayJson.success == true) {
-          wx.hideLoading();
-          this.atricles = this.atricles.concat(arrayJson.obj.list.results);
-          this.$apply();
-        } else {
-          wx.hideLoading();
-          Tips.error(arrayJson.msg);
-        }
       }
     };
 
@@ -100,7 +69,7 @@
       "navigationBarBackgroundColor": '#fff',
       "navigationBarTextStyle": 'black'
     };
-    mixins = [base];
+    mixins = [base, pagination];
   }
 </script>
 

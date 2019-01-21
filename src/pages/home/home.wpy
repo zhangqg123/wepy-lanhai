@@ -31,7 +31,7 @@
   <view class="tab-border" />
 
   <view style="margin-top:8px;">
-    <repeat for="{{array}}" key="index" index="index" item="item">
+    <repeat for="{{page.list}}" key="index" index="index" item="item">
       <view class="news-item" @tap="toArticlesContent({{item.id}})">
         <view class="news-item-left">
           <view class="news-item-title"><text class="xl">{{item.title}}</text></view>
@@ -53,7 +53,7 @@
   import base from '../../mixins/base';
   import Event from '../../utils/Event';
   import Tips from '../../utils/Tips';
-//  import WxUtils from '../../utils/WxUtils';
+  import pagination from '../../mixins/pagination';
   import SwiperBar from '../../components/template/swiper_bar';
   let interval = null;
 
@@ -62,6 +62,9 @@
       param: {
         adImgs: {},
         adUpload: null
+      },
+      page: {
+        list: []
       },
       array: [],
       menu: [],
@@ -96,17 +99,13 @@
           title: this.menu[0].name  //页面标题为动态参数
         })
         this.active = columnId;
-        const arrayJson = await exam.getArticlesList(columnId);
-        if (arrayJson.success == true) {
-          this.array = arrayJson.obj.list.results;
-          console.info("this.array",this.array);
-        } else {
-          Tips.error(arrayJson.data.msg);
-        }
+//        const arrayJson = await exam.getArticlesList(columnId);
+        this.page = exam.articleList("all");
+        await this.next();
 
         Event.listen(Event.USER_LOGOUT, this.clear.bind(this), this);
       } catch (e) {
-        Tips.error(e.message);
+        Tips.modal(e.message);
       } finally {
         this.loaded();
       }
@@ -173,7 +172,7 @@
 //      enablePullDownRefresh: true,
 //      navigationBarTitleText: '浪潮培训'
     };
-    mixins = [base];
+    mixins = [base, pagination];
   }
 </script>
 

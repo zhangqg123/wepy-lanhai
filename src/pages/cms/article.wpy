@@ -32,7 +32,6 @@
         console.info("options",options);
         this.articleId = options.articleId;
         const articlesJson = await exam.queryOneArticles(this.articleId);
-        console.info("articlesJson",articlesJson);
         if (articlesJson.success == true) {
           this.detail = articlesJson.obj;
 
@@ -40,7 +39,6 @@
             title: this.detail.title  //页面标题为动态参数
           })
           this.imageHref = wepy.$instance.globalData.baseUrl2+'/upload/img/cms/' + this.detail.imageHref;
-          console.log(this.imageHref);
           WxParse.wxParse('article', 'html', this.detail.content, this,5);
         } else {
           Tips.error(articlesJson.msg);

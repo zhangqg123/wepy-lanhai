@@ -63,6 +63,7 @@
         adImgs: {},
         adUpload: null
       },
+      url:wepy.$instance.globalData.baseUrl2,
       page: {
         list: []
       },
@@ -99,7 +100,6 @@
           title: this.menu[0].name  //页面标题为动态参数
         })
         this.active = columnId;
-//        const arrayJson = await exam.getArticlesList(columnId);
         this.page = exam.articleList("all");
         await this.next();
 

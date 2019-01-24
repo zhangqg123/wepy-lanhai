@@ -43,8 +43,6 @@
         })
 
         this.domain = wepy.$instance.globalData.baseUrl2+'/upload/img/cms/';
-        console.info("this.domain",this.domain);
-        const arrayJson = await exam.articleList(this.columnId);
         this.page = exam.articleList(this.columnId);
         await this.next();
       } catch (e) {

@@ -3,9 +3,9 @@ import {
 } from '../utils/wxRequest';
 
 let env = "-test" //-dev 或者 -test
-//const domain = 'https://hunchun.zqgzht.com'
+const domain = 'https://hunchun.zqgzht.com'
 
-const domain = 'http://192.168.0.199:8080/jeecg'
+//const domain = 'http://192.168.0.199:8080/jeecg'
 
 //定义广告位全局变量，用于页面获取
 const apiAdUpload =  domain + '/upload/img/cms/'

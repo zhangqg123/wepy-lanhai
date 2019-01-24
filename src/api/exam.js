@@ -16,7 +16,7 @@ export default class exam extends base {
   static async queryScore (openId,examId) {
     const url = `${this.baseUrl2}/work/exam/queryScore.do?openId=${openId}&examId=${examId}`;
     const data=await this.get(url);
-    return data;
+     return data;
   }
   static async queryAllAdImages () {
     const url = `${this.baseUrl2}/work/cms/queryAllAdImages.do`;
@@ -35,13 +35,11 @@ export default class exam extends base {
   }
   static async queryOneArticles (articleId) {
     const url = `${this.baseUrl2}/work/cms/queryOneArticles.do?articleId=${articleId}`;
-    console.info("articleId",articleId);
     const data=await this.get(url);
     return data;
   }
   static articleList(columnId) {
     const url = `${this.baseUrl2}/work/cms/articleList.do?columnId=${columnId}`;
-    console.info("url====",url);
     return new Page(url, this._processArticleList.bind(this));
   }
   static _processArticleList(item) {
@@ -49,7 +47,6 @@ export default class exam extends base {
   
   static examList(categories) {
     const url = `${this.baseUrl2}/work/exam/examList.do`;
-    console.info("url====",url);
     return new Page(url, this._processExamList.bind(this,categories));
   }
 

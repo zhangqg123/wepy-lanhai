@@ -7,6 +7,7 @@ const Calendar = require('../utils/Calendar.js');
 var aesKey=wepy.$instance.globalData.aesKey;
 var ivKey= wepy.$instance.globalData.ivKey;
 var appId=wepy.$instance.globalData.appId;
+var xcxId=wepy.$instance.globalData.xcxId;
 
 export default class signin extends base {
 
@@ -17,8 +18,9 @@ export default class signin extends base {
     postParams[0]=["nonce_str",nonce_str];
     postParams[1]=["status","jscode2session"];
     postParams[2]=["jscode",res.code];
+    postParams[3]=["xcxId",xcxId];
     var signVal=sign.createSign(postParams,appId);//签名
-    const url = `${this.baseUrl2}/api/signin/getOpenid.do?jscode=${res.code}&nonce_str=${nonce_str}&sign=${signVal}&status=jscode2session`;
+    const url = `${this.baseUrl2}/api/signin/getOpenid.do?jscode=${res.code}&xcxId=${xcxId}&nonce_str=${nonce_str}&sign=${signVal}&status=jscode2session`;
     return await this.get(url).then(data => {
       return data == null ? [] : data;
     });

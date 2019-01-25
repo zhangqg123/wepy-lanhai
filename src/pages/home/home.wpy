@@ -82,17 +82,19 @@
 //        this.userInfo = await wepy.getUserInfo();
         wepy.$instance.globalData.resCode=res.code;
         this.show = true;
-        const data = await exam.queryAllAdImages();
-        console.info("data",data);
+/*        const data = await exam.queryAllAdImages();
         if (data.success == true) {
           this.param.adImgs = data.obj;
         } else {
           Tips.error(data.msg);
         }
+*/
         const upload = wepy.$instance.globalData.baseUrl2+'/upload/img/cms/';
         this.param.adUpload = upload;
 
         const json = await exam.getMenuList();
+        this.param.adImgs=json;
+        console.info("this.param.adImgs",this.param.adImgs);
         this.menu = json;
         //初始化加载第一个栏目文章信息
         var columnId = this.menu[0].id;

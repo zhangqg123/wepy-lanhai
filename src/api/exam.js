@@ -5,6 +5,7 @@ import Lang from '../utils/Lang';
 const rand = require('../utils/random.js');
 const sign = require('../utils/sign.js');
 var appId=wepy.$instance.globalData.appId;
+var xcxId=wepy.$instance.globalData.xcxId;
 
 export default class exam extends base {
   static async queryAnswer (openId,examId) {

@@ -94,10 +94,10 @@
 
         const json = await exam.getMenuList();
         this.param.adImgs=json;
-        console.info("this.param.adImgs",this.param.adImgs);
         this.menu = json;
         //初始化加载第一个栏目文章信息
         var columnId = this.menu[0].id;
+        wepy.$instance.globalData.createBy=this.menu[0].createBy;
         wx.setNavigationBarTitle({
           title: this.menu[0].name  //页面标题为动态参数
         })

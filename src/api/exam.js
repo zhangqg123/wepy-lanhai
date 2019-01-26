@@ -25,7 +25,7 @@ export default class exam extends base {
     return data;
   }
   static async getMenuList () {
-    const url = `${this.baseUrl2}/work/cms/menu.do`;
+    const url = `${this.baseUrl2}/work/cms/menu.do?xcxId=${xcxId}`;
     const data=await this.get(url);
     return data;
   }
@@ -40,14 +40,17 @@ export default class exam extends base {
     return data;
   }
   static articleList(columnId) {
-    const url = `${this.baseUrl2}/work/cms/articleList.do?columnId=${columnId}`;
+    var createBy=wepy.$instance.globalData.createBy;
+    const url = `${this.baseUrl2}/work/cms/articleList.do?columnId=${columnId}&createBy=${createBy}`;
+    console.info("url",url);
     return new Page(url, this._processArticleList.bind(this));
   }
   static _processArticleList(item) {
   }
   
   static examList(categories) {
-    const url = `${this.baseUrl2}/work/exam/examList.do`;
+    var createBy=wepy.$instance.globalData.createBy;
+    const url = `${this.baseUrl2}/work/exam/examList.do?createBy=${createBy}`;
     return new Page(url, this._processExamList.bind(this,categories));
   }
 
@@ -57,12 +60,14 @@ export default class exam extends base {
   }
 
   static async columnList () {
+    var createBy=wepy.$instance.globalData.createBy;
     var nonce_str = rand.getRand();//随机数
     var postParams=[];
     postParams[0]=["nonce_str",nonce_str];
     postParams[1]=["status","columnList"];
+    postParams[2]=["createBy",createBy];
     var signVal=sign.createSign(postParams,appId);
-    const url = `${this.baseUrl2}/api/exam/columnList.do?nonce_str=${nonce_str}&sign=${signVal}&status=columnList`;
+    const url = `${this.baseUrl2}/api/exam/columnList.do?nonce_str=${nonce_str}&sign=${signVal}&status=columnList&createBy=${createBy}`;
     var data=await this.get(url);
     return data;
   }

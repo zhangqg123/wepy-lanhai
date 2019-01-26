@@ -20,6 +20,7 @@
       },
       appId: 'wx5c51671623808ac0',
       resCode: '',
+      createBy: '',
       xcxId: 'wx1dd61973b1e47f1b',
       aesKey: "W3ZNF7UMBAn9WFnx",
       ivKey: "chMQRwqC2xIIXqLV",

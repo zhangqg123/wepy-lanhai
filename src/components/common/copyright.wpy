@@ -16,10 +16,9 @@
       }
     };
     data = {
-      version: null
+      version: wepy.$instance.globalData.version
     };
     onLoad () {
-      this.version = wepy.$instance.globalData.version;
     }
   }
 </script>

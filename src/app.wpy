@@ -13,7 +13,7 @@
   export default class extends wepy.app {
     globalData = {
       auth: {},
-      shop: {},
+      usertype: "exam",
       header: {
         'Content-Type': 'application/json',
         'Cookie': ''
@@ -26,7 +26,7 @@
       ivKey: "chMQRwqC2xIIXqLV",
 //      baseUrl2: 'https://hunchun.zqgzht.com',
       baseUrl2: 'http://192.168.0.199:8080/jeecg',
-      version: 'v1.0.0'
+      version: 'v1.0.3'
     };
     constructor() {
       super();

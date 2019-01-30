@@ -63,37 +63,6 @@
         </view>
       </form>
     </view>  
-
-    <!--身份证验证
-    <view wx:if="{{status==3}}">
-      <form @submit="idCardLogin">
-        <view class="page__bd form">
-          <view class="weui-cells weui-cells_after-title">
-            <view class="weui-cell weui-cell_input weui-cell_vcode">
-              <view class="weui-cell__hd">
-                <view class="weui-label">姓名</view>
-              </view>
-              <view class="weui-cell__bd">
-                <input class="weui-input" name="realname" placeholder="请输入姓名"/>
-              </view>
-            </view>
-            <view class="weui-cell weui-cell_input weui-cell_vcode">
-              <view class="weui-cell__hd">
-                <view class="weui-label">身份证号</view>
-              </view>
-              <view class="weui-cell__bd">
-                <input class="weui-input" name="idcard" maxlength="18" placeholder="请输入身份证号"/>
-              </view>
-            </view>
-          </view>
-
-          <view class="weui-btn-area">
-            <button class="weui-btn" type="primary" form-type="submit">下一步</button>
-          </view>
-        </view>
-      </form>
-    </view>  
--->
   </view>
 
   <Copyright buttom="true" />
@@ -102,6 +71,7 @@
 <script>
   import wepy from 'wepy';
   import auth from '../../api/auth';
+  import signin from '../../api/signin';
   import base from '../../mixins/base';
   import input from '../../mixins/input';
   import FormTips from '../../components/weui/tips';
@@ -118,10 +88,41 @@
     };
     data = {...this.def};
     async onLoad () {
+      var openId = auth.getConfig('openId');
+      if (openId == null) {
+        openId=await signin.jscode2session();
+        await auth.setConfig('openId', openId);
+      }
+      console.info("openId",openId);
       this.loaded();
     }
 
     methods = {
+      async smsCode() {
+        if (!this.isPhoneValid(this.input.phone)) {
+          return;
+        }
+        // 发送验证码
+        let data;
+        try {
+          data= await auth.smsCode(this.input.phone);
+          console.info('data',data);
+          if(data.success==false && data.msg!=null){
+            Tips.modal(data.msg);
+          }
+
+          if(data.success==true){
+            this.$invoke('VCode', 'cd', 60);
+            Tips.success('验证码已发送');
+          }
+          
+        } catch (e) {
+          Tips.modal(e.message);
+        } finally {
+          this.loaded();
+        }
+      },
+      
       async smsCodeLogin({detail}) {
         // 覆盖对象
         Object.assign(this.loginMessage, detail.value);
@@ -129,14 +130,8 @@
           return;
         }
         try {
-          let data;
-          try {
-            data = await auth.smsCodeLogin(this.input.phone, this.loginMessage.code);
-            console.info("attributes:",data.attributes);
-          } catch (err) {
-              this.tips(err.message);
-              return;
-          }
+          let data = await auth.smsCodeLogin(this.input.phone, this.loginMessage.code);
+          console.info("attributes:",data.attributes);
           if(data.attributes.status){
             await auth.setConfig('login_code', data.obj);
             this.loginCode=data.obj;
@@ -195,7 +190,6 @@
           try {
             const param = {
               id: this.loginCode,
-//              username: this.loginMessage.username,
               password: this.loginMessage.password
             };
 
@@ -221,34 +215,11 @@
         if(this.status==3){
           await Tips.toast('注册成功');
 //          this.$redirect('../login/index');
-          wepy.navigateBack();
+          this.$navigate('status'); 
+//          wepy.navigateBack();
         }
       },
 
-      async smsCode() {
-        if (!this.isPhoneValid(this.input.phone)) {
-          return;
-        }
-        // 发送验证码
-        let data;
-        try {
-          data= await auth.smsCode(this.input.phone);
-          console.info('data',data);
-          if(data.success==false && data.msg!=null){
-            Tips.modal(data.msg);
-          }
-
-          if(data.success==true){
-            this.$invoke('VCode', 'cd', 60);
-            Tips.success('验证码已发送');
-          }
-          
-        } catch (err) {
-          this.tips(e.message);
-        } finally {
-          this.loaded();
-        }
-      }
     };
     onShareAppMessage () {
       const title = '乐享商家助手';

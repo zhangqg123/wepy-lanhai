@@ -76,6 +76,7 @@
 
     async load () {
       const loginCode = auth.getConfig('login_code');
+      console.info("loginCode",loginCode);
       if (loginCode != null) {
         this.userInfo = await auth.userInfo();
         console.info("this.userInfo",this.userInfo);

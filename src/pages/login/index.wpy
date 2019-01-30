@@ -57,7 +57,7 @@
     def = {
       init: false,
       id: null,
-      name:null,
+      examId:null,
       management:null,
       status: 0,
       redirectUrl:null,
@@ -68,9 +68,7 @@
       try {
         console.info("option:",option);
         const loginCode = auth.getConfig('login_code');
-        this.guideId=option.guideId;
-        this.name=option.name;
-        this.management=option.management;
+        this.examId=option.examId;
         this.redirectUrl=option.url;
 
       } catch (e) {
@@ -95,11 +93,12 @@
               password: this.loginMessage.password
             };
             data = await auth.login(param);
+            console.info("data",data);
             if (data.success == true) {
               await auth.setConfig('login_code', data.attributes.login_code);
               await auth.setConfig('status',data.attributes.status);
               if(this.redirectUrl!=null){
-                this.$redirect(this.redirectUrl,{guideId: this.guideId,name:this.name,management:this.management});
+                this.$redirect(this.redirectUrl,{examId: this.examId});
               }else{
                 this.$switch('../home/myproject');
               }

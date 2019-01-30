@@ -110,19 +110,23 @@
         this.reload();
       },
       async queryAnswer(info) {
+        if (!auth.isLogin()) {
+          this.$root.$navigate('/pages/login/index',{url:'/pages/exam/examAnswer',examId:info.examId});
+        }else{
           try {
-          var openId = auth.getConfig('openId');
-          var data=await exam.queryScore(openId,info.examId);
-          if(data!="fail"){
-            this.$root.$navigate('/pages/exam/examAnswer', {examId: info.examId});
-          }else{
-            Tips.modal("先考试，再看答案");
+            var openId = auth.getConfig('openId');
+            var data=await exam.queryScore(openId,info.examId);
+            if(data!="fail"){
+              this.$root.$navigate('/pages/exam/examAnswer', {examId: info.examId});
+            }else{
+              Tips.modal("先考试，再看答案");
+            }
+          } catch (e) {
+            Tips.error(e.message);
+          } finally {
+            this.loaded();
           }
-        } catch (e) {
-          Tips.error(e.message);
-        } finally {
-          this.loaded();
-        }
+       }
       },
       async queryScore(info) {
         try{

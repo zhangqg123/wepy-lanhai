@@ -110,26 +110,28 @@ export default class signin extends base {
   }
 
   //签到
-  static async doSign () {
+  static async doSign (lat,lng) {
     var openId=wepy.$instance.globalData.auth["openId"];
     var nonce_str = rand.getRand();//随机数
     var postParams=[];
     postParams[0]=["nonce_str",nonce_str];
     postParams[1]=["status","doSign"];
     postParams[2]=["openid",openId];
+    postParams[3]=["lat",lat];
+    postParams[4]=["lng",lng];
+    postParams[5]=["appId",xcxId];
+
     var signVal=sign.createSign(postParams,appId);//签名
-    const url = `${this.baseUrl2}/api/signin/doSign.do?openid=${openId}&nonce_str=${nonce_str}&sign=${signVal}&status=doSign`;
+    const url = `${this.baseUrl2}/api/signin/doSign.do?openid=${openId}&lat=${lat}&lng=${lng}&appId=${xcxId}&nonce_str=${nonce_str}&sign=${signVal}&status=doSign`;
     console.info("url=====",url);
-    const data = await this.get(url);
-    if(data=="success"){
+    var data=[];
+    data.msg = await this.get(url);
+    if(data.msg==1){
       var now = new Date();//当前时间
-      return this.initCalendar(now);      
-    }else{
-      if(data=="already"){
-        return "already";
-      }
-      return false;
+      data.obj= await this.initCalendar(now);      
     }
+    return data;
+    
     // 调用服务器端，实现签到入库
 /*    wx.request({
       url: '${this.baseUrl2}/signin/rest.do?doSign',

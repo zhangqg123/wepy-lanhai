@@ -18,6 +18,7 @@
         'Content-Type': 'application/json',
         'Cookie': ''
       },
+      globalFormIds: [],
       appId: 'wx5c51671623808ac0',
       resCode: '',
       createBy: '',

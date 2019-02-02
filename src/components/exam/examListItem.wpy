@@ -29,9 +29,11 @@
         </view>
 
         <view class="row-end  mt10 mr20">
-          <button  class="my-mini-btn mr20" type="primary" @tap="enterExam({{exam.id}})" >
-            <image class="icon-s" src="/images/icons/zw10.png"/>开始考试
-          </button>
+          <form bindsubmit="enterExam({{exam.id}})" report-submit='true'>
+            <button form-type="submit" class="my-mini-btn mr20" type="primary" >
+              <image class="icon-s" src="/images/icons/zw10.png"/>开始考试
+            </button>
+          </form>            
           <button  class="my-mini-btn mr20" type="primary" @tap="queryScore({{exam.id}})" >
             <image class="icon-s" src="/images/icons/zw8.png"/>查询成绩
           </button>
@@ -53,8 +55,9 @@
     };
     data = {};
     methods = {
-      async enterExam(examId) {
-        this.$root.$navigate('/pages/exam/examPage', {examId: examId});
+      async enterExam(examId,e) {
+        var formId=e.detail.formId;
+        this.$emit('enterExam',{examId: examId,formId:formId})
       },
       async queryScore(examId) {
         this.$emit('queryScore', {examId:examId});

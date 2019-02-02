@@ -15,7 +15,7 @@
         <!--指南列表-->
         <view class="guide-list">
           <repeat for="{{page.list}}" key="index" index="index" item="item">
-            <ExamListItem :exam.sync="item" @queryAnswer.user="queryAnswer" @queryScore.user="queryScore" />
+            <ExamListItem :exam.sync="item" @enterExam.user="enterExam" @queryAnswer.user="queryAnswer" @queryScore.user="queryScore" />
           </repeat>
         </view>
         <Loadmore :page.sync="page" emptyText="暂无项目"/>
@@ -83,6 +83,17 @@
       Event.listen(Event.GOODS_LIST_UPDATE, this.updateApply.bind(this), this);
       this.loaded();
     };
+    collectFormIds (formId) { 
+      let formIds = wepy.$instance.globalData.globalFormIds;  // 获取全局推送码数组
+      if (!formIds)
+          formIds = [];
+      let data = {
+          formId: formId,
+          expireTime: new Date().getTime() + 60480000
+      }
+      formIds.push(data);
+      wepy.$instance.globalData.globalFormIds = formIds;
+    };
     // 获取分页参数
     params() {
       return {
@@ -92,7 +103,7 @@
     }
     async updateApply(){
       console.info("updateApply================");
-    }
+    };
     // 获取部门
     async getColumnList() {
       // 加载部门
@@ -102,12 +113,16 @@
         this.categories.selectedId = "all";
       }
        this.loaded();
-    }
+    };
+
     methods = {
       // 点击分类
       switchTab(selectedId) {
-        console.info("categery selectedId",selectedId);
         this.reload();
+      },
+      async enterExam(info) {
+        this.collectFormIds(info.formId);
+        this.$root.$navigate('/pages/exam/examPage', {examId: info.examId});
       },
       async queryAnswer(info) {
         if (!auth.isLogin()) {

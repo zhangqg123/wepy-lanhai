@@ -71,6 +71,20 @@ export default class exam extends base {
     var data=await this.get(url);
     return data;
   }
+  static async uploadFormIds(formIds){
+    var openId=wepy.$instance.globalData.auth["openId"];
+    var nonce_str = rand.getRand();//随机数
+    var postParams=[];
+    postParams[0]=["nonce_str",nonce_str];
+    postParams[1]=["status","uploadFormIds"];
+    postParams[2]=["formIds",formIds];
+    postParams[3]=["openId",openId];
+    var signVal=sign.createSign(postParams,appId);
+    const url = `${this.baseUrl2}/api/exam/uploadFormIds.do?nonce_str=${nonce_str}&sign=${signVal}&status=uploadFormIds&openId=${openId}&formIds=${formIds}`;
+    const data=await this.get(url);
+    return data;
+
+  }
   /**
    * 获取试题
    */
@@ -130,7 +144,7 @@ export default class exam extends base {
     postParams[4]=["examId",examId];
     var signVal=sign.createSign(postParams,appId);
 
-    const url = `${this.baseUrl2}/api/exam/subChoose.do?nonce_str=${nonce_str}&sign=${signVal}&status=subChoose&param=${param}&openId=${openId}&examId=${examId}`;
+    const url = `${this.baseUrl2}/api/main/exam/subChoose.do?nonce_str=${nonce_str}&sign=${signVal}&status=subChoose&param=${param}&openId=${openId}&examId=${examId}`;
 //    var data= await this.get(url);
     return this.get(url).then(data => this._createExamScore(data));
 

@@ -59,12 +59,16 @@
     data = {...this.def};
     async onLoad (option) {
       try{
-        this.examId=option.examId;
-        const data = await exam.questionList(this.examId);
-        this.questions=data;
-        this.length=data.length;
-        this.flag=0;
-        this.renderQuestion(this.flag);
+        if (!auth.isLogin()) {
+          this.$redirect('/pages/login/index',{url:'/pages/exam/examAnswer',examId:option.examId});
+        }else{
+          this.examId=option.examId;
+          const data = await exam.questionList(this.examId);
+          this.questions=data;
+          this.length=data.length;
+          this.flag=0;
+          this.renderQuestion(this.flag);
+        }
       } catch (e) {
         Tips.error(e.message);
       } finally {

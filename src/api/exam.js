@@ -80,7 +80,7 @@ export default class exam extends base {
     postParams[2]=["formIds",formIds];
     postParams[3]=["openId",openId];
     var signVal=sign.createSign(postParams,appId);
-    const url = `${this.baseUrl2}/api/exam/uploadFormIds.do?nonce_str=${nonce_str}&sign=${signVal}&status=uploadFormIds&openId=${openId}&formIds=${formIds}`;
+    const url = `${this.baseUrl2}/api/main/exam/uploadFormIds.do?nonce_str=${nonce_str}&sign=${signVal}&status=uploadFormIds&openId=${openId}&formIds=${formIds}`;
     const data=await this.get(url);
     return data;
 
@@ -142,9 +142,10 @@ export default class exam extends base {
     postParams[2]=["param",param];
     postParams[3]=["openId",openId];
     postParams[4]=["examId",examId];
+    postParams[5]=["xcxId",xcxId];
     var signVal=sign.createSign(postParams,appId);
 
-    const url = `${this.baseUrl2}/api/main/exam/subChoose.do?nonce_str=${nonce_str}&sign=${signVal}&status=subChoose&param=${param}&openId=${openId}&examId=${examId}`;
+    const url = `${this.baseUrl2}/api/main/exam/subChoose.do?nonce_str=${nonce_str}&sign=${signVal}&status=subChoose&param=${param}&openId=${openId}&examId=${examId}&xcxId=${xcxId}`;
 //    var data= await this.get(url);
     return this.get(url).then(data => this._createExamScore(data));
 

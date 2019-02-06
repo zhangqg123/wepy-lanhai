@@ -1,0 +1,176 @@
+<template>
+  <Tips />
+  <view class="page" wx:if="{{init}}">
+      <form @submit="follow">
+        <view class="page__bd form">
+          <view class="weui-cells weui-cells_after-title">
+            <view class="weui-cell weui-cell_input weui-cell_vcode">
+              <view class="weui-cell__hd">
+                <view class="weui-label">关注手机</view>
+              </view>
+              <view class="weui-cell__bd">
+                <input class="weui-input" id="phone" @input="input" type="number" maxlength="11" placeholder="关注手机号"/>
+              </view>
+              <view class="weui-cell__ft">
+                <VCode @tap.user="smsCode"/>
+              </view>
+            </view>
+            <view class="weui-cell weui-cell_input weui-cell_vcode">
+              <view class="weui-cell__hd">
+                <view class="weui-label">验证码</view>
+              </view>
+              <view class="weui-cell__bd">
+                <input class="weui-input" type="number" name="code" maxlength="6" placeholder="请输入验证码"/>
+              </view>
+            </view>
+          </view>
+
+          <view class="weui-btn-area">
+            <button class="weui-btn" type="primary" form-type="submit">关联学生</button>
+          </view>
+        </view>
+      </form>
+  </view>
+
+  <Copyright buttom="true" />
+
+</template>
+<script>
+  import wepy from 'wepy';
+  import auth from '../../api/auth';
+  import signin from '../../api/signin';
+  import base from '../../mixins/base';
+  import input from '../../mixins/input';
+  import FormTips from '../../components/weui/tips';
+  import VCode from '../../components/weui/vcode';
+  import Tips from '../../utils/Tips';
+  import WxUtils from '../../utils/WxUtils';
+  import Copyright from '../../components/common/copyright';
+  export default class Follow extends wepy.page {
+    def = {
+      init: false,
+      loginCode:null,
+      status: 0,
+      loginMessage: {}
+    };
+    data = {...this.def};
+    async onLoad () {
+      var openId = auth.getConfig('openId');
+      if (openId == null) {
+        openId=await signin.jscode2session();
+        await auth.setConfig('openId', openId);
+      }
+      console.info("openId",openId);
+      this.loaded();
+    }
+
+    methods = {
+      async smsCode() {
+        if (!this.isPhoneValid(this.input.phone)) {
+          return;
+        }
+        // 发送验证码
+        let data;
+        try {
+          data= await auth.smsCode(this.input.phone,"follow");
+          console.info('data',data);
+          if(data.success==false && data.msg!=null){
+            Tips.modal(data.msg);
+          }
+
+          if(data.success==true){
+            this.$invoke('VCode', 'cd', 60);
+            Tips.success('验证码已发送');
+          }
+          
+        } catch (e) {
+          Tips.modal(e.message);
+        } finally {
+          this.loaded();
+        }
+      },
+      
+      async follow({detail}) {
+        // 覆盖对象
+        Object.assign(this.loginMessage, detail.value);
+        console.info("this.loginMessage",this.loginMessage);
+        if (!this.isValid(this.input.phone)) {
+          return;
+        }
+        try {
+          let data = await auth.follow(this.input.phone, this.loginMessage.code);
+          console.info("data",data);
+
+          await Tips.success('关联成功');
+          this.$switch('/pages/home/myproject'); 
+        } catch (e) {
+          this.tips(e.message);
+        } finally {
+          this.loaded();
+        }
+      },
+
+    };
+    onShareAppMessage () {
+      const title = '助手';
+      const url = '/pages/home/index';
+      return Tips.share(title, url, title);
+    }
+
+    /**
+     * 校验表单提交
+     */
+    isValid(phone) {
+      if (!this.isPhoneValid(phone)) {
+        return false;
+      }
+      if (this.isEmpty(this.loginMessage.code)) {
+        this.tips('请输入验证码');
+        return false;
+      }
+      return true;
+    }
+    /**
+     * 校验电话号码
+     */
+    isPhoneValid(phone) {
+      if (this.isEmpty(phone)) {
+        this.tips('请输入手机号码');
+        return false;
+      }
+      const reg = /^1[34578]\d{9}$/;
+      if (!reg.test(phone)) {
+        this.tips('电话号码格式错误');
+        return false;
+      }
+      return true;
+    }
+    mixins = [input, base];
+    config = {
+      navigationBarTitleText: '浪潮家教'
+    };
+    components = {
+      Tips: FormTips,
+      VCode: VCode,
+      Copyright: Copyright
+    };
+  }
+</script>
+
+<style lang="scss">
+  @import "../../styles/variable";
+  .brand{
+    padding-top: 60rpx;
+    padding-bottom: 60rpx;
+
+    .logo{
+      width: 100px;
+      height: 100px;
+    }
+
+    text{
+      margin-top: 15rpx;
+      font-size: $text-form;
+    }
+  }
+</style>

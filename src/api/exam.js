@@ -14,6 +14,19 @@ export default class exam extends base {
     return data;
   }
 
+
+  static scoreList(openId) {
+    const url = `${this.baseUrl2}/work/exam/scoreList.do?openId=${openId}`;
+    console.info("url",url);
+//    const data=await this.get(url);
+//    return data;
+
+    return new Page(url, this._processScoreList.bind(this));
+  }
+
+  static _processScoreList(item) {
+  }
+
   static async queryScore (openId,examId) {
     const url = `${this.baseUrl2}/work/exam/queryScore.do?openId=${openId}&examId=${examId}`;
     const data=await this.get(url);

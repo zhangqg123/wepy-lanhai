@@ -9,9 +9,9 @@
     <!--操作区域-->
     <view class="operation-box">
       <view class="operation-row row-around" >
-        <navigator class="column-center" url="../apply/myWorks">
+        <navigator class="column-center" @tap="score">
           <image src="/images/home/shop.png"/>
-          <text>我的办件</text>
+          <text>我的成绩</text>
         </navigator>
         <navigator class="column-center" url="../apply/myApplies">
           <image src="/images/home/cart.png"/>
@@ -99,11 +99,12 @@
           this.$navigate('../login/status');
         }
       },
-      async interview () {
+
+      async score () {
         if(this.userInfo.status==0){
           this.$navigate('../login/index');
         }else{
-          this.$navigate('../apply/myInterviews');
+          this.$navigate('../exam/scoreList', {phone: this.userInfo.phone});
         }
       }
 

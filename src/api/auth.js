@@ -98,21 +98,41 @@ export default class auth extends base {
     const data = await this.get(url);
     return data;
   }
+  /**
+   * 短信验证码登录
+   */
+  static async follow(phone, code) {
+    var openId=wepy.$instance.globalData.auth["openId"];
+    console.info("openId",openId);
+    var nonce_str = rand.getRand();//随机数
+    var postParams=[];
+    postParams[0]=["nonce_str",nonce_str];
+    postParams[1]=["status","follow"];
+    postParams[2]=["phone",phone];
+    postParams[3]=["userkey",code];
+    postParams[4]=["openId",openId];
+    postParams[5]=["usertype","exam"];
+    var signVal=sign.createSign(postParams,appId);//签名
+    const url = `${this.baseUrl2}/api/txsms/follow.do?phone=${phone}&userkey=${code}&openId=${openId}&usertype=exam&nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=follow`;
+    console.info("url",url);
+    const data = await this.get(url);
+    return data;
+  }
 
 
   /**
    * 短信验证码
    */
-  static async smsCode (phone) {
+  static async smsCode (phone,status) {
     var nonce_str = rand.getRand();//随机数
     var postParams=[];
     postParams[0]=["nonce_str",nonce_str];
-    postParams[1]=["status","smsCode"];
+    postParams[1]=["status",status];
     postParams[2]=["phone",phone];
     postParams[3]=["usertype","exam"];
     postParams[4]=["xcxId",xcxId];
     var signVal=sign.createSign(postParams,appId);//签名
-    const url = `${this.baseUrl2}/api/txsms/smsCode.do?phone=${phone}&usertype=exam&xcxId=${xcxId}&nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=smsCode`;
+    const url = `${this.baseUrl2}/api/txsms/smsCode.do?phone=${phone}&usertype=exam&xcxId=${xcxId}&nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=${status}`;
     const data = await this.get(url);
     return data;
   }

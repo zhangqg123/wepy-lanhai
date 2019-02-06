@@ -105,7 +105,7 @@
         // 发送验证码
         let data;
         try {
-          data= await auth.smsCode(this.input.phone);
+          data= await auth.smsCode(this.input.phone,"smsCode");
           console.info('data',data);
           if(data.success==false && data.msg!=null){
             Tips.modal(data.msg);

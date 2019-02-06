@@ -5,21 +5,19 @@
       <view class="news-item">
         <view></view>
         <view>
-          <text class="xxl default"> 成绩 = </text>
-          <text class="xxl primary"> {{rightData.score * 10}} 分</text>
+          <text class="xxl default"> 考试人</text>
+          <text class="xxl primary">  {{oId}}</text>
         </view>
       </view>
     </view>
     <view class="mt20">
-      <repeat for="{{rightData.list}}" key="index" index="index" item="item">
+      <repeat for="{{page.list}}" key="index" index="index" item="item">
       <view class="news-item">
         <view>
-          <text class="ml20 xxl mr20" >{{index+1}}</text>
-          <image class="icon-lg ml20 mr20" src="{{item.right==1?'/images/icons/status-6.png':'/images/icons/status-7.png'}}" />
+          <text class="ml20 xxl" maxlength='40'>{{item.examName}}</text>
         </view>
         <view>
-          <text class="xxl ml20 mr20" >正确答案</text>
-          <text class="xxl ml20 mr20" >{{item.rightValue}}</text>
+          <text class="xxl mr20" >{{item.score}}</text>
         </view>
        </view>
       </repeat> 
@@ -37,30 +35,34 @@
   import exam from '../../api/exam';
   import base from '../../mixins/base';
   import Tips from '../../utils/Tips';
+  import pagination from '../../mixins/pagination';
   import Placeholder from '../../components/common/placeholder';
   import ActionBar from '../../components/common/action_bar';
 
-  export default class ExamScore extends wepy.page {
+  export default class ScoreList extends wepy.page {
     def = {
       examId:null,
-      rightData:null,
+      oId:null,
+      page: {
+        list: []
+      },
       init: false
     };
     data = {...this.def};
     async onLoad (option) {
       try{
-        this.examId=option.examId;
+        console.info("option",option);
         var openId = auth.getConfig('openId');
         if (openId == null) {
           openId=await signin.jscode2session();
           await auth.setConfig('openId', openId);
         }
-        var data = await exam.subChoose(option.param,openId,option.examId);
-        this.rightData=data;
-        console.info("this.rightData",this.rightData);
-//        Tips.modal('得分：'+data);
+        this.page = exam.scoreList(openId);
+        this.oId=option.phone;
+        await this.next();
+        console.info("this.page",this.page);
       } catch (e) {
-        Tips.error(e.message);
+        Tips.modal(e.message);
       } finally {
         this.loaded();
       }
@@ -77,7 +79,7 @@
       }
     };
 
-    mixins = [base];
+    mixins = [base, pagination];
     config = {
       navigationBarTitleText: '成绩'
     };

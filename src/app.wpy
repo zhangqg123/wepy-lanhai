@@ -105,6 +105,7 @@
         'pages/login/realAuth',
         'pages/login/idCardAuth',
         'pages/login/index',
+        'pages/login/follow',
         'pages/login/register',
         'pages/login/status',
         'pages/cms/article',
@@ -119,6 +120,7 @@
         'pages/exam/examAnswer',
         'pages/exam/examPage',
         'pages/exam/examScore',
+        'pages/exam/scoreList',
         'pages/guide/commonDetail',
         'pages/guide/guide',
         'pages/guide/guide_list'
@@ -161,7 +163,7 @@
             iconPath: 'images/tab/user.png',
             selectedIconPath: 'images/tab/user-active.png',
             pagePath: 'pages/home/myproject',
-            text: '教师'
+            text: '我'
           }
         ]
       }

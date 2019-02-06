@@ -29,11 +29,12 @@
 
           <view class="weui-btn-area">
             <button class="weui-btn" type="primary" form-type="submit">确定</button>
-            <view class="row mr20 ml20 mt20" @tap="enter">
-              <view><text class="primary xl">我要注册</text></view>
-            </view>
           </view>
           <view class="weui-btn-area" >
+            <view class="row-between mr20 ml20 mt20" >
+              <view @tap="enter"><text class="primary xl">我要注册</text></view>
+              <view @tap="follow"><text class="primary xl">关注学生</text></view>
+            </view>
           </view>
         </view>
       </form>
@@ -81,6 +82,9 @@
     methods = {
       async enter() {
         this.$root.$navigate('/pages/login/register');
+      },
+      async follow() {
+        this.$root.$navigate('/pages/login/follow');
       },
       async login({detail}) {
         // 覆盖对象

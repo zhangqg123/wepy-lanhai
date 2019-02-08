@@ -52,10 +52,15 @@
     async onLoad (option) {
       try{
         console.info("option",option);
-        var openId = auth.getConfig('openId');
-        if (openId == null) {
-          openId=await signin.jscode2session();
-          await auth.setConfig('openId', openId);
+        var openId;
+        if(option.soid){
+          openId=option.soid;
+        }else{
+          openId = auth.getConfig('openId');
+          if (openId == null) {
+            openId=await signin.jscode2session();
+            await auth.setConfig('openId', openId);
+          }          
         }
         var formIds = wepy.$instance.globalData.globalFormIds;  // 获取全局推送码
         console.info("formIds",formIds);
@@ -67,7 +72,7 @@
         this.page = exam.scoreList(openId);
         this.oId=option.phone;
         await this.next();
-        console.info("this.page",this.page);
+        console.info("openId",openId);
       } catch (e) {
         Tips.modal(e.message);
       } finally {

@@ -9,10 +9,14 @@
     <!--操作区域-->
     <view class="operation-box">
       <view class="operation-row row-around" >
-        <navigator class="column-center" @tap="score">
-          <image src="/images/home/shop.png"/>
-          <text>我的成绩</text>
-        </navigator>
+        <form bindsubmit="score" report-submit='true'>
+          <button plain form-type="submit" >
+            <view class="operation-row column-center">
+              <image src="/images/home/shop.png"/>
+              <text>我的成绩</text>
+            </view>
+          </button>
+        </form>            
         <form bindsubmit="follow" report-submit='true'>
           <button plain form-type="submit" >
             <view class="operation-row column-center">
@@ -21,31 +25,43 @@
             </view>
           </button>
         </form>            
-        <navigator class="column-center" url="../apply/myAudits">
-          <image src="/images/home/order.png"/>
-          <text>我的预审</text>
-        </navigator>
+        <form bindsubmit="scan" report-submit='true'>
+          <button plain form-type="submit" >
+            <view class="operation-row column-center">
+              <image src="/images/home/order.png"/>
+              <text>我的预审</text>
+            </view>
+          </button>
+        </form>            
       </view>
 
       <view class="hr"></view>
 
       <view class="row-around">
-        <view class="operation-row column-center" @tap="interview">
-          <image src="/images/home/coupon.png"/>
-          <text>我的预约</text>
-        </view>
-        <form bindsubmit="enterExam({{exam.id}})" report-submit='true'>
+        <form bindsubmit="scan" report-submit='true'>
           <button plain form-type="submit" >
             <view class="operation-row column-center" @tap="interview">
-              <image src="/images/home/more.png"/>
-              <text>开始考试</text>
+              <image src="/images/home/coupon.png"/>
+              <text>我的预约</text>
             </view>
           </button>
         </form>            
-        <view class="operation-row column-center"  @tap="scan">
-          <image src="/images/home/scan.png"/>
-          <text>扫码核销</text>
-        </view>
+        <form bindsubmit="scan" report-submit='true'>
+          <button plain form-type="submit" >
+            <view class="operation-row column-center" @tap="interview">
+              <image src="/images/home/more.png"/>
+              <text>学生管理</text>
+            </view>
+          </button>
+        </form>            
+        <form bindsubmit="scan" report-submit='true'>
+          <button plain form-type="submit" >
+            <view class="operation-row column-center" @tap="interview">
+              <image src="/images/home/scan.png"/>
+              <text>扫码核销</text>
+            </view>
+          </button>
+        </form>            
       </view>
     </view>
   </view>
@@ -98,16 +114,27 @@
       this.loaded();
     };
 
-
+    collect(formId){
+      console.info("formId",formId);
+      if(formId != "the formId is a mock one"){
+        exam.collectFormIds(formId);
+      }
+    };
     methods = {
-      async enter () {
+      async scan (e) {
+        this.collect(e.detail.formId);
+      },
+
+      async enter (e) {
+        this.collect(e.detail.formId);
         if(this.userInfo.status==0){
           this.$navigate('../login/index');
         }else{
           this.$navigate('../login/status');
         }
       },
-      async score () {
+      async score (e) {
+        this.collect(e.detail.formId);
         if(this.userInfo.status==0){
           this.$navigate('../login/index');
         }else{
@@ -117,9 +144,7 @@
 
       async follow (e) {
         try{
-//          if(e.detail.formId != "the formId is a mock one"){
-            exam.collectFormIds(e.detail.formId);
-//          }
+          this.collect(e.detail.formId);
           var data = await auth.userFollow();
           console.info("data",data);
         } catch (e) {
@@ -128,7 +153,7 @@
           this.loaded();
         }
         if(data.success==true){
-          this.$navigate('../exam/scoreList',{phone: data.obj});
+          this.$navigate('../exam/scoreList',{phone: data.obj.phone,soid:data.obj.openid});
         }else{
 //          Tips.modal("没有关注的学生");
           this.$navigate('../login/follow');          

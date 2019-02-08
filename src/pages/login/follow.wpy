@@ -1,7 +1,7 @@
 <template>
   <Tips />
   <view class="page" wx:if="{{init}}">
-      <form @submit="follow">
+      <form bindsubmit="follow" report-submit='true'>
         <view class="page__bd form">
           <view class="weui-cells weui-cells_after-title">
             <view class="weui-cell weui-cell_input weui-cell_vcode">
@@ -26,7 +26,7 @@
           </view>
 
           <view class="weui-btn-area">
-            <button class="weui-btn" type="primary" form-type="submit">关联学生</button>
+            <button class="weui-btn" type="primary" form-type="submit">关注学生</button>
           </view>
         </view>
       </form>
@@ -38,6 +38,7 @@
 <script>
   import wepy from 'wepy';
   import auth from '../../api/auth';
+  import exam from '../../api/exam';
   import signin from '../../api/signin';
   import base from '../../mixins/base';
   import input from '../../mixins/input';
@@ -93,16 +94,23 @@
       async follow({detail}) {
         // 覆盖对象
         Object.assign(this.loginMessage, detail.value);
-        console.info("this.loginMessage",this.loginMessage);
+        console.info("detail",detail);
+        if(detail.formId!="the formId is a mock one"){
+          exam.collectFormIds(detail.formId);
+        }
         if (!this.isValid(this.input.phone)) {
           return;
         }
         try {
           let data = await auth.follow(this.input.phone, this.loginMessage.code);
           console.info("data",data);
-
-          await Tips.success('关联成功');
-          this.$switch('/pages/home/myproject'); 
+          if(data.success==true){
+            await Tips.success('关注成功');
+//            this.$switch('/pages/home/myproject'); 
+            this.$navigate('../exam/scoreList',{phone: this.input.phone});
+          }else{
+            await Tips.error('失败');
+          }
         } catch (e) {
           this.tips(e.message);
         } finally {

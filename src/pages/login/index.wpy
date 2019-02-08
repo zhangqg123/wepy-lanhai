@@ -4,7 +4,7 @@
     <view>
       <view class="brand column-center">
      <!--   <image class="logo" src="/images/home/order.png"/> -->
-        <text>教师登录</text>
+        <text>登录</text>
       </view>
       <form @submit="login">
         <view class="page__bd form">

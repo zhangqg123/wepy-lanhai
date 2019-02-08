@@ -77,6 +77,22 @@ export default class auth extends base {
     const data = await this.get(url);
     return data.obj;
   }
+  /**
+   * 用户关注
+   */
+  static async userFollow() {
+    var openId=wepy.$instance.globalData.auth["openId"];
+    var nonce_str = rand.getRand();//随机数
+    var postParams=[];
+    postParams[0]=["nonce_str",nonce_str];
+    postParams[1]=["status","userFollow"];
+    postParams[2]=["openId",openId];
+    var signVal=sign.createSign(postParams,appId);//签名
+    const url = `${this.baseUrl2}/api/txsms/userFollow.do?nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=userFollow&openId=${openId}`;
+    console.info("url",url);
+    const data = await this.get(url);
+    return data;
+  }
 
   /**
    * 短信验证码登录

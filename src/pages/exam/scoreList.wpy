@@ -57,6 +57,13 @@
           openId=await signin.jscode2session();
           await auth.setConfig('openId', openId);
         }
+        var formIds = wepy.$instance.globalData.globalFormIds;  // 获取全局推送码
+        console.info("formIds",formIds);
+        if (formIds.length>0) {
+            formIds = JSON.stringify(formIds);  // 转换成JSON字符串
+            wepy.$instance.globalData.globalFormIds = [];  
+            await exam.uploadFormIds(formIds);
+        }
         this.page = exam.scoreList(openId);
         this.oId=option.phone;
         await this.next();

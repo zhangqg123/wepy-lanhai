@@ -78,17 +78,7 @@
     data = {...this.def};
     async onLoad (option) {
       try {
-        const res=await wepy.login();
-//        this.userInfo = await wepy.getUserInfo();
-        wepy.$instance.globalData.resCode=res.code;
-        this.show = true;
-/*        const data = await exam.queryAllAdImages();
-        if (data.success == true) {
-          this.param.adImgs = data.obj;
-        } else {
-          Tips.error(data.msg);
-        }
-*/
+//        this.uploadFormIds();
         const upload = wepy.$instance.globalData.baseUrl2+'/upload/img/cms/';
         this.param.adUpload = upload;
 

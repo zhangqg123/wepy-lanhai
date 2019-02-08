@@ -121,7 +121,7 @@
         this.reload();
       },
       async enterExam(info) {
-        this.collectFormIds(info.formId);
+        exam.collectFormIds(info.formId);
         this.$root.$navigate('/pages/exam/examPage', {examId: info.examId});
       },
       async queryAnswer(info) {

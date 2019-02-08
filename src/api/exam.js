@@ -14,6 +14,18 @@ export default class exam extends base {
     return data;
   }
 
+  static  collectFormIds (formId) { 
+    console.info("formId",formId);
+      let formIds = wepy.$instance.globalData.globalFormIds;  // 获取全局推送码数组
+      if (!formIds)
+          formIds = [];
+      let data = {
+          formId: formId,
+          expireTime: new Date().getTime() + 60480000
+      }
+      formIds.push(data);
+      wepy.$instance.globalData.globalFormIds = formIds;
+  }
 
   static scoreList(openId) {
     const url = `${this.baseUrl2}/work/exam/scoreList.do?openId=${openId}`;

@@ -13,10 +13,14 @@
           <image src="/images/home/shop.png"/>
           <text>我的成绩</text>
         </navigator>
-        <navigator class="column-center" url="../apply/myApplies">
-          <image src="/images/home/cart.png"/>
-          <text>我的考题</text>
-        </navigator>
+        <form bindsubmit="follow" report-submit='true'>
+          <button plain form-type="submit" >
+            <view class="operation-row column-center">
+              <image src="/images/home/cart.png"/>
+              <text>关注学生</text>
+            </view>
+          </button>
+        </form>            
         <navigator class="column-center" url="../apply/myAudits">
           <image src="/images/home/order.png"/>
           <text>我的预审</text>
@@ -30,10 +34,14 @@
           <image src="/images/home/coupon.png"/>
           <text>我的预约</text>
         </view>
-        <navigator class="operation-row column-center" url="../apply/myAudits">
-          <image src="/images/home/more.png"/>
-          <text>我的评价</text>
-        </navigator>
+        <form bindsubmit="enterExam({{exam.id}})" report-submit='true'>
+          <button plain form-type="submit" >
+            <view class="operation-row column-center" @tap="interview">
+              <image src="/images/home/more.png"/>
+              <text>开始考试</text>
+            </view>
+          </button>
+        </form>            
         <view class="operation-row column-center"  @tap="scan">
           <image src="/images/home/scan.png"/>
           <text>扫码核销</text>
@@ -48,7 +56,7 @@
   import wepy from 'wepy';
   import base from '../../mixins/base';
   import auth from '../../api/auth';
-//  import shop from '../../api/shop';
+  import exam from '../../api/exam';
   import Tips from '../../utils/Tips';
   import Event from '../../utils/Event';
   import Navigator from '../../components/weui/navigator';
@@ -99,15 +107,33 @@
           this.$navigate('../login/status');
         }
       },
-
       async score () {
         if(this.userInfo.status==0){
           this.$navigate('../login/index');
         }else{
           this.$navigate('../exam/scoreList', {phone: this.userInfo.phone});
         }
-      }
+      },
 
+      async follow (e) {
+        try{
+//          if(e.detail.formId != "the formId is a mock one"){
+            exam.collectFormIds(e.detail.formId);
+//          }
+          var data = await auth.userFollow();
+          console.info("data",data);
+        } catch (e) {
+          Tips.error(e.message);
+        } finally {
+          this.loaded();
+        }
+        if(data.success==true){
+          this.$navigate('../exam/scoreList',{phone: data.obj});
+        }else{
+//          Tips.modal("没有关注的学生");
+          this.$navigate('../login/follow');          
+        }
+      }
     };
     components = {
       Copyright: Copyright,

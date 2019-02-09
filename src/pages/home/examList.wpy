@@ -83,17 +83,7 @@
       Event.listen(Event.GOODS_LIST_UPDATE, this.updateApply.bind(this), this);
       this.loaded();
     };
-    collectFormIds (formId) { 
-      let formIds = wepy.$instance.globalData.globalFormIds;  // 获取全局推送码数组
-      if (!formIds)
-          formIds = [];
-      let data = {
-          formId: formId,
-          expireTime: new Date().getTime() + 60480000
-      }
-      formIds.push(data);
-      wepy.$instance.globalData.globalFormIds = formIds;
-    };
+
     // 获取分页参数
     params() {
       return {
@@ -121,7 +111,9 @@
         this.reload();
       },
       async enterExam(info) {
-        exam.collectFormIds(info.formId);
+        if(info.formId != "the formId is a mock one"){
+          exam.collectFormIds(info.formId);
+        }
         this.$root.$navigate('/pages/exam/examPage', {examId: info.examId});
       },
       async queryAnswer(info) {

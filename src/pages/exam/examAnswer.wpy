@@ -64,8 +64,8 @@
         }else{
           this.examId=option.examId;
           const data = await exam.questionList(this.examId);
-          this.questions=data;
-          this.length=data.length;
+          this.questions=data.obj;
+          this.length=data.obj.length;
           this.flag=0;
           this.renderQuestion(this.flag);
         }

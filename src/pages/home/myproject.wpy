@@ -136,7 +136,7 @@
       async score (e) {
         this.collect(e.detail.formId);
         if(this.userInfo.status==0){
-          this.$navigate('../login/index');
+          this.$root.$navigate('/pages/login/index');
         }else{
           this.$navigate('../exam/scoreList', {phone: this.userInfo.phone});
         }

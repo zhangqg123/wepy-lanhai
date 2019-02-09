@@ -55,7 +55,7 @@
           openId=await signin.jscode2session();
           await auth.setConfig('openId', openId);
         }
-        var data = await exam.subChoose(option.param,openId,option.examId);
+        var data = await exam.subChoose(option.param,openId,option.examId,option.startTime);
         this.rightData=data;
         console.info("this.rightData",this.rightData);
 //        Tips.modal('得分：'+data);

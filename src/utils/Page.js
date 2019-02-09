@@ -28,7 +28,7 @@ export default class Pagination {
    * 加载下一页数据
    */
   async next (args) {
-//    console.info(args);
+    console.log("page loading",);
 
     const param = {
       pageNumber: this.start,
@@ -45,7 +45,7 @@ export default class Pagination {
       const data = await http.get(this.url, param);
 
       // 底部判断
-      if (data === null || data.length < 1) {
+      if (data.obj === null || data.obj.length < 1) {
         if (this.toClear) {
           this.clear();
         } else {
@@ -55,17 +55,17 @@ export default class Pagination {
       }
       this.empty = false;
       // 处理数据
-      this._processData(data);
+      this._processData(data.obj);
       // 设置数据
       if (this.toClear) {
-        this.list = data;
+        this.list = data.obj;
         this.toClear = false;
       } else {
-        this.list = this.list.concat(data);
+        this.list = this.list.concat(data.obj);
       }
 //      this.start += this.count;
       this.start ++;
-      if (data.length < this.count) {
+      if (data.obj.length < this.count) {
         this.reachBottom = true;
       }
       return this;

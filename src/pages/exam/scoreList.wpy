@@ -24,7 +24,7 @@
     </view>
   </view>
     <!--操作栏-->
-    <ActionBar @tap.user="retExamList" @answer.user="examAnswer" examListText="考试列表" answerText="查看答案" /> 
+    <ActionBar @tap.user="retExamList" @answer.user="examAnswer" examListText="考试列表" answerText="查看答案" noCancel="1"/> 
 
 </view>
 </template>
@@ -72,7 +72,7 @@
         this.page = exam.scoreList(openId);
         this.oId=option.phone;
         await this.next();
-        console.info("openId",openId);
+        console.info("this.page",this.page);
       } catch (e) {
         Tips.modal(e.message);
       } finally {

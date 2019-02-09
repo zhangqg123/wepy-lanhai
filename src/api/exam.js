@@ -159,7 +159,7 @@ export default class exam extends base {
   }
 
 
-  static async subChoose(param,openId,examId) {
+  static async subChoose(param,openId,examId,startTime) {
     var nonce_str = rand.getRand();//随机数
     var postParams=[];
     postParams[0]=["nonce_str",nonce_str];
@@ -168,9 +168,10 @@ export default class exam extends base {
     postParams[3]=["openId",openId];
     postParams[4]=["examId",examId];
     postParams[5]=["xcxId",xcxId];
+    postParams[6]=["startTime",startTime];
     var signVal=sign.createSign(postParams,appId);
 
-    const url = `${this.baseUrl2}/api/main/exam/subChoose.do?nonce_str=${nonce_str}&sign=${signVal}&status=subChoose&param=${param}&openId=${openId}&examId=${examId}&xcxId=${xcxId}`;
+    const url = `${this.baseUrl2}/api/main/exam/subChoose.do?nonce_str=${nonce_str}&sign=${signVal}&status=subChoose&param=${param}&openId=${openId}&examId=${examId}&xcxId=${xcxId}&startTime=${startTime}`;
 //    var data= await this.get(url);
     return this.get(url).then(data => this._createExamScore(data));
 

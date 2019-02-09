@@ -9,8 +9,11 @@
     </view>
   </view>
   <view class="action-bar row-center fixed-bottom" wx:else>
-    <view class="action {{okType}}-acton row-center" style="width: 100%" @tap="tap">
+    <view class="action {{okType}}-acton row-center" @tap="tap">
       <text>{{examListText}}</text>
+    </view>
+    <view class="action secondary-action row-center" @tap="back">
+      <text>{{cancelText}}</text>
     </view>
   </view>
 
@@ -30,6 +33,9 @@
       answerText: {
         default: '查看答案'
       },
+      cancelText: {
+        default: '取消'
+      },
       noCancel: {
         default: 0
       }
@@ -40,6 +46,9 @@
       },
       answer() {
         this.$emit('answer');
+      },
+      back() {
+        wepy.navigateBack();
       }
     }
   }

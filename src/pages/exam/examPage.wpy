@@ -81,6 +81,7 @@
       showCard:false,
       flag: 0,
       length: 0,
+      startTime:null,
       init: false
     };
     data = {...this.def};
@@ -88,8 +89,9 @@
       try{
         this.examId=option.examId;
         const data = await exam.questionList(this.examId);
-        this.questions=data;
-        this.length=data.length;
+        this.questions=data.obj;
+        this.length=data.obj.length;
+        this.startTime=data.attributes.startTime;
         this.flag=0;
         this.renderQuestion(this.flag);
       } catch (e) {
@@ -201,7 +203,7 @@
             }
           });
         var param=JSON.stringify(temp); 
-        this.$root.$navigate('/pages/exam/examScore',{param:param,examId:this.examId});
+        this.$root.$navigate('/pages/exam/examScore',{param:param,examId:this.examId,startTime:this.startTime});
 /*        try{
           var openId = auth.getConfig('openId');
           if (openId == null) {

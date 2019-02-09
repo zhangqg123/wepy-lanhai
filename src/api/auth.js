@@ -108,8 +108,9 @@ export default class auth extends base {
     postParams[3]=["userkey",code];
     postParams[4]=["openId",openId];
     postParams[5]=["usertype","exam"];
+    postParams[6]=["xcxId",xcxId];
     var signVal=sign.createSign(postParams,appId);//签名
-    const url = `${this.baseUrl2}/api/txsms/smsCodeLogin.do?phone=${phone}&userkey=${code}&openId=${openId}&usertype=exam&nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=smsCode`;
+    const url = `${this.baseUrl2}/api/txsms/smsCodeLogin.do?phone=${phone}&userkey=${code}&openId=${openId}&xcxId=${xcxId}&usertype=exam&nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=smsCode`;
     console.info("url",url);
     const data = await this.get(url);
     return data;

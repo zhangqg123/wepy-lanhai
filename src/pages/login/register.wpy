@@ -195,28 +195,28 @@
 
             attributes = await auth.userRegister(param);
             console.info("attributes:",attributes);
+            if(attributes.register==1){
+              await Tips.modal('手机号码已注册');
+            }else{
+              if(attributes.status){
+                this.status=attributes.status;
+                console.info("this.status:",this.status);
+              }
+            }
+            if(this.status==3){
+              await Tips.toast('注册成功');
+              this.$switch('../home/myproject');
+    //          this.$navigate('status'); 
+    //          wepy.navigateBack();
+            }
           } catch (err) {
               this.tips(err.message);
               return;
-          }
-          if(attributes.register==1){
-            await Tips.modal('手机号码已注册');
-          }else{
-            if(attributes.status){
-              this.status=attributes.status;
-              console.info("this.status:",this.status);
-            }
           }
         } catch (e) {
           this.tips(e.message);
         } finally {
           this.loaded();
-        }
-        if(this.status==3){
-          await Tips.toast('注册成功');
-//          this.$redirect('../login/index');
-          this.$navigate('status'); 
-//          wepy.navigateBack();
         }
       },
 

@@ -20,7 +20,6 @@
      */
     async next () {
       try {
-        console.log("pagination loading ---------");
         if (this.page.reachBottom) {
           return;
         }

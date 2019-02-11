@@ -28,8 +28,6 @@ export default class Pagination {
    * 加载下一页数据
    */
   async next (args) {
-    console.log("page loading",);
-
     const param = {
       pageNumber: this.start,
       pageSize: this.count

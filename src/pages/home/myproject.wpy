@@ -99,19 +99,24 @@
     };
 
     async load () {
-      const loginCode = auth.getConfig('login_code');
-      console.info("loginCode",loginCode);
-      if (loginCode != null) {
-        this.userInfo = await auth.userInfo();
-        console.info("this.userInfo",this.userInfo);
-        if(this.userInfo.status==3){
-          this.userInfo.realname="未实名认证";
+      try {
+        const loginCode = auth.getConfig('login_code');
+        console.info("loginCode",loginCode);
+        if (loginCode != null) {
+          this.userInfo = await auth.userInfo();
+          console.info("this.userInfo",this.userInfo);
+          if(this.userInfo.status==3){
+            this.userInfo.realname="未实名认证";
+          }
+        }else{
+          this.userInfo.status=0;
+          this.userInfo.realname="登录获取更多服务";
         }
-      }else{
-        this.userInfo.status=0;
-        this.userInfo.realname="登录获取更多服务";
+      } catch (e) {
+        Tips.modal(e.message);
+      } finally {
+        this.loaded();
       }
-      this.loaded();
     };
 
     collect(formId){

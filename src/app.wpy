@@ -25,8 +25,8 @@
       xcxId: 'wx1dd61973b1e47f1b',
       aesKey: "W3ZNF7UMBAn9WFnx",
       ivKey: "chMQRwqC2xIIXqLV",
-      baseUrl2: 'https://hunchun.zqgzht.com', 
-//      baseUrl2: 'http://192.168.0.199:8080/jeecg',
+//      baseUrl2: 'https://hunchun.zqgzht.com', 
+      baseUrl2: 'http://192.168.0.199:8080/jeecg',
       version: 'v1.0.4'
     };
     constructor() {
@@ -101,6 +101,7 @@
         'pages/home/home',
         'pages/home/signin',
         'pages/home/myproject',
+        'pages/home/assignList',
         'pages/home/examList',
         'pages/login/realAuth',
         'pages/login/idCardAuth',
@@ -110,20 +111,10 @@
         'pages/login/status',
         'pages/cms/article',
         'pages/cms/articleList',
-        'pages/apply/apply',
-        'pages/apply/edit',
-        'pages/apply/interview',
-        'pages/apply/myInterviews',
-        'pages/apply/myApplies',
-        'pages/apply/myAudits',
-        'pages/apply/myWorks',
         'pages/exam/examAnswer',
         'pages/exam/examPage',
         'pages/exam/examScore',
-        'pages/exam/scoreList',
-        'pages/guide/commonDetail',
-        'pages/guide/guide',
-        'pages/guide/guide_list'
+        'pages/exam/scoreList'
       ],
       "permission": {
         "scope.userLocation": {
@@ -152,6 +143,12 @@
             selectedIconPath: 'images/tab/order-active.png',
             pagePath: 'pages/home/examList',
             text: '考试'
+          },
+          {
+            iconPath: 'images/tab/order.png',
+            selectedIconPath: 'images/tab/order-active.png',
+            pagePath: 'pages/home/assignList',
+            text: '作业'
           },
           {
             iconPath: 'images/tab/home.png',

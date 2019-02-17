@@ -68,9 +68,14 @@ export default class exam extends base {
     var createBy=wepy.$instance.globalData.createBy;
     const url = `${this.baseUrl2}/work/cms/articleList.do?columnId=${columnId}&createBy=${createBy}`;
     console.info("url",url);
-    return new Page(url, this._processArticleList.bind(this));
+    return new Page(url, this._processNoList.bind(this));
   }
-  static _processArticleList(item) {
+  static _processNoList(item) {
+  }
+  static assignList() {
+    var createBy=wepy.$instance.globalData.createBy;
+    const url = `${this.baseUrl2}/work/exam/assignList.do?createBy=${createBy}`;
+    return new Page(url, this._processNoList.bind(this));
   }
   
   static examList(categories) {

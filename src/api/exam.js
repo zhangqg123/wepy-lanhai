@@ -115,6 +115,8 @@ export default class exam extends base {
     return data;
 
   }
+
+
   /**
    * 获取试题
    */

@@ -52,7 +52,7 @@
         this.examId=option.examId;
         var openId = auth.getConfig('openId');
         if (openId == null) {
-          openId=await signin.jscode2session();
+          openId=await auth.jscode2session();
           await auth.setConfig('openId', openId);
         }
         var data = await exam.subChoose(option.param,openId,option.examId,option.startTime);

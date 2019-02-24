@@ -10,6 +10,7 @@ page{
 .mr20{margin-right: 20rpx}
 .ml10{margin-left: 10rpx}
 .ml20{margin-left: 20rpx}
+.mt6{margin-top: 6rpx}
 .mt10{margin-top: 10rpx}
 .mt20{margin-top: 20rpx}
 .mb10{margin-bottom: 10rpx}
@@ -58,6 +59,8 @@ button{
   border-radius:5rpx;
   font-size:30rpx
 }
+
+
 button.pain-btn[open-type="share"]::after {
   border:none;
 }

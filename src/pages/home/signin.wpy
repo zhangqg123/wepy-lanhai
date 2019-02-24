@@ -34,7 +34,6 @@
   import signin from '../../api/signin';
   import base from '../../mixins/base';
   import Tips from '../../utils/Tips';
-  import MenuItem from '../../components/zwzx/item';
   import Placeholder from '../../components/common/placeholder';
   import ActionBar from '../../components/common/action_bar';
 
@@ -48,7 +47,7 @@
     async onLoad () {
       var openId = auth.getConfig('openId');
       if (openId == null) {
-        openId=await signin.jscode2session();
+        openId=await auth.jscode2session();
         await auth.setConfig('openId', openId);
       }
       console.info("openId",openId);
@@ -57,10 +56,6 @@
       this.signData=data;
       console.info("this.signData-----",this.signData);
 
-/*      signin.jscode2session(res=>{
-        var nowDate = new Date();//当前日期
-        signin.initCalendar(nowDate);//加载日历
-      }); */
       this.loaded();
     };
 
@@ -145,7 +140,6 @@
       navigationBarTitleText: '签到'
     };
     components = {
-      MenuItem: MenuItem,
       Placeholder: Placeholder,
       ActionBar: ActionBar
     };

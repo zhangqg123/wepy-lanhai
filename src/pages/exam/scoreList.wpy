@@ -3,21 +3,26 @@
   <view>
     <view class="mt20" >
       <view class="news-item">
-        <view></view>
         <view>
           <text class="xxl default"> 考试人</text>
           <text class="xxl primary">  {{oId}}</text>
         </view>
+        <view><button wx:if="{{soid}}" class="my-mini-btn mt6" type="default"  bindtap='followCancel'>取消关注</button></view>
       </view>
     </view>
     <view class="mt20">
       <repeat for="{{page.list}}" key="index" index="index" item="item">
       <view class="news-item">
         <view>
-          <text class="ml20 xxl" maxlength='40'>{{item.examName}}</text>
+          <view>
+            <text class="ml20 xxl" maxlength='40'>{{item.examName}}</text>
+          </view>
+          <view>
+            <text class="ml20 xl" >{{item.createDate}}</text>
+          </view>
         </view>
         <view>
-          <text class="xxl mr20" >{{item.score}}</text>
+          <text class="xxl mr20" >{{item.score}} 分</text>
         </view>
        </view>
       </repeat> 
@@ -43,6 +48,7 @@
     def = {
       examId:null,
       oId:null,
+      soid:null,
       page: {
         list: []
       },
@@ -54,25 +60,25 @@
         console.info("option",option);
         var openId;
         if(option.soid){
+          this.soid=option.soid;
           openId=option.soid;
         }else{
           openId = auth.getConfig('openId');
           if (openId == null) {
-            openId=await signin.jscode2session();
+            openId=await auth.jscode2session();
             await auth.setConfig('openId', openId);
           }          
         }
         var formIds = wepy.$instance.globalData.globalFormIds;  // 获取全局推送码
-        console.info("formIds",formIds);
-        if (formIds.length>0) {
+         if (formIds.length>0) {
             formIds = JSON.stringify(formIds);  // 转换成JSON字符串
             wepy.$instance.globalData.globalFormIds = [];  
             await exam.uploadFormIds(formIds);
         }
         this.page = exam.scoreList(openId);
+        console.info("this.page",this.page);
         this.oId=option.phone;
         await this.next();
-        console.info("this.page",this.page);
       } catch (e) {
         Tips.modal(e.message);
       } finally {
@@ -85,6 +91,31 @@
       retExamList() {
         console.log("retun examList");
         this.$switch('../home/examList');
+      },
+
+      async followCancel() {
+        try{
+          if(this.soid!=null){
+            var openId = auth.getConfig('openId');
+            if (openId == null) {
+              openId=await auth.jscode2session();
+              await auth.setConfig('openId', openId);
+            }          
+
+            var data=await auth.followCancel(this.soid,openId);
+            if(data.success==true){
+              this.soid=null;
+              await Tips.success("已取消");
+              this.$switch('../home/myproject');
+            }else{
+              Tips.error("失败");
+            }
+          }
+        } catch (e) {
+          Tips.error(e.message);
+        } finally {
+          this.loaded();
+        }
       },
       examAnswer() {
         this.$root.$navigate('/pages/exam/examAnswer', {examId: this.examId});        

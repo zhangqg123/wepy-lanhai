@@ -10,6 +10,32 @@ var xcxId=wepy.$instance.globalData.xcxId;
 var usertype=wepy.$instance.globalData.usertype;
 
 export default class auth extends base {
+  static async dept() {
+    var nonce_str = rand.getRand();//随机数
+    var postParams=[];
+    postParams[0]=["nonce_str",nonce_str];
+    postParams[1]=["status","dept"];
+    var signVal=sign.createSign(postParams,appId);//签名
+    const url = `${this.baseUrl2}/api/exam/dept.do?nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=dept`;
+    const data = await this.get(url);
+    return data.obj;
+  }
+  
+  static async jscode2session () {
+    const res = await wepy.login();
+    var nonce_str = rand.getRand();//随机数
+    var postParams=[];
+    postParams[0]=["nonce_str",nonce_str];
+    postParams[1]=["status","jscode2session"];
+    postParams[2]=["jscode",res.code];
+    postParams[3]=["xcxId",xcxId];
+    var signVal=sign.createSign(postParams,appId);//签名
+    const url = `${this.baseUrl2}/api/signin/getOpenid.do?jscode=${res.code}&xcxId=${xcxId}&nonce_str=${nonce_str}&sign=${signVal}&status=jscode2session`;
+    return await this.get(url).then(data => {
+      return data == null ? [] : data;
+    });
+
+  }
   /**
    * 检查登录状态
    */
@@ -30,7 +56,7 @@ export default class auth extends base {
     postParams[1]=["status","login"];
     postParams[2]=["xcxId",xcxId];
     var signVal=sign.createSign(postParams,appId);//签名
-    const url = `${this.baseUrl2}/api/txsms/login.do?nonce_str=${nonce_str}&sign=${signVal}&status=login&xcxId=${xcxId}`;
+    const url = `${this.baseUrl2}/api/exam/login.do?nonce_str=${nonce_str}&sign=${signVal}&status=login&xcxId=${xcxId}`;
 
 //    const url = `${this.baseUrl2}/rest/tokens?username=interfaceuser&password=123456`;
 
@@ -47,7 +73,7 @@ export default class auth extends base {
     postParams[1]=["status","userRegister"];
     var signVal=sign.createSign(postParams,appId);//签名
 
-    const url = `${this.baseUrl2}/api/txsms/userRegister.do?nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=userRegister`;
+    const url = `${this.baseUrl2}/api/exam/userRegister.do?nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=userRegister`;
     const data= await this.post(url, param);
     return data.attributes;
   }
@@ -73,7 +99,7 @@ export default class auth extends base {
     postParams[0]=["nonce_str",nonce_str];
     postParams[1]=["status","userInfo"];
     var signVal=sign.createSign(postParams,appId);//签名
-    const url = `${this.baseUrl2}/api/txsms/userInfo.do?nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=userInfo`;
+    const url = `${this.baseUrl2}/api/exam/userInfo.do?nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=userInfo`;
     const data = await this.get(url);
     return data.obj;
   }
@@ -88,7 +114,7 @@ export default class auth extends base {
     postParams[1]=["status","userFollow"];
     postParams[2]=["openId",openId];
     var signVal=sign.createSign(postParams,appId);//签名
-    const url = `${this.baseUrl2}/api/txsms/userFollow.do?nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=userFollow&openId=${openId}`;
+    const url = `${this.baseUrl2}/api/exam/userFollow.do?nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=userFollow&openId=${openId}`;
     console.info("url",url);
     const data = await this.get(url);
     return data;
@@ -110,7 +136,7 @@ export default class auth extends base {
     postParams[5]=["usertype","exam"];
     postParams[6]=["xcxId",xcxId];
     var signVal=sign.createSign(postParams,appId);//签名
-    const url = `${this.baseUrl2}/api/txsms/smsCodeLogin.do?phone=${phone}&userkey=${code}&openId=${openId}&xcxId=${xcxId}&usertype=exam&nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=smsCode`;
+    const url = `${this.baseUrl2}/api/exam/smsCodeLogin.do?phone=${phone}&userkey=${code}&openId=${openId}&xcxId=${xcxId}&usertype=exam&nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=smsCode`;
     console.info("url",url);
     const data = await this.get(url);
     return data;
@@ -130,12 +156,26 @@ export default class auth extends base {
     postParams[4]=["openId",openId];
     postParams[5]=["usertype","exam"];
     var signVal=sign.createSign(postParams,appId);//签名
-    const url = `${this.baseUrl2}/api/txsms/follow.do?phone=${phone}&userkey=${code}&openId=${openId}&usertype=exam&nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=follow`;
+    const url = `${this.baseUrl2}/api/exam/follow.do?phone=${phone}&userkey=${code}&openId=${openId}&usertype=exam&nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=follow`;
     console.info("url",url);
     const data = await this.get(url);
     return data;
   }
 
+  static async followCancel(soid,poid){
+    var nonce_str = rand.getRand();//随机数
+    var postParams=[];
+    postParams[0]=["nonce_str",nonce_str];
+    postParams[1]=["status","followCancel"];
+    postParams[2]=["soid",soid];
+    postParams[3]=["poid",poid];
+    postParams[4]=["usertype","exam"];
+    var signVal=sign.createSign(postParams,appId);
+    const url = `${this.baseUrl2}/api/exam/followCancel.do?nonce_str=${nonce_str}&sign=${signVal}&status=followCancel&soid=${soid}&poid=${poid}&usertype=exam`;
+    const data=await this.get(url);
+    return data;
+
+  }
 
   /**
    * 短信验证码
@@ -164,7 +204,7 @@ export default class auth extends base {
     postParams[2]=["idcard",idcard];
     postParams[3]=["usertype",usertype];
     var signVal=sign.createSign(postParams,appId);//签名
-    const url = `${this.baseUrl2}/api/txsms/idCardLogin.do?idcard=${idcard}&usertype=${usertype}&`+encodeURI(encodeURI(`realname=${realname}`))+`&nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=idcard`;
+    const url = `${this.baseUrl2}/api/exam/idCardLogin.do?idcard=${idcard}&usertype=${usertype}&`+encodeURI(encodeURI(`realname=${realname}`))+`&nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=idcard`;
     console.info("url:",url);
     const data = await this.get(url);
     return data;

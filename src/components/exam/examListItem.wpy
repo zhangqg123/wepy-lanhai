@@ -34,12 +34,16 @@
               <image class="icon-s" src="/images/icons/zw10.png"/>开始考试
             </button>
           </form>            
-          <button  class="my-mini-btn mr20" type="primary" @tap="queryScore({{exam.id}})" >
-            <image class="icon-s" src="/images/icons/zw8.png"/>查询成绩
-          </button>
-          <button  class="my-mini-btn mr20" type="primary" @tap="queryAnswer({{exam.id}})" >
-            <image class="icon-s" src="/images/icons/zw8.png"/>查看答案
-          </button>
+          <form bindsubmit="queryScore({{exam.id}})" report-submit='true'>
+            <button form-type="submit" class="my-mini-btn mr20" type="primary" >
+              <image class="icon-s" src="/images/icons/zw8.png"/>查询成绩
+            </button>
+          </form>            
+          <form bindsubmit="queryAnswer({{exam.id}})" report-submit='true'>
+            <button form-type="submit" class="my-mini-btn mr20" type="primary"  >
+              <image class="icon-s" src="/images/icons/zw8.png"/>查看答案
+            </button>
+          </form>            
         </view>
       </view>
     </view>
@@ -59,10 +63,12 @@
         var formId=e.detail.formId;
         this.$emit('enterExam',{examId: examId,formId:formId})
       },
-      async queryScore(examId) {
-        this.$emit('queryScore', {examId:examId});
+      async queryScore(examId,e) {
+        var formId=e.detail.formId;
+        this.$emit('queryScore', {examId:examId,formId:formId});
       },
-      async queryAnswer(examId) {
+      async queryAnswer(examId,e) {
+        var formId=e.detail.formId;
         this.$emit('queryAnswer', {examId:examId});
       },
     };

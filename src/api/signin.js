@@ -11,21 +11,6 @@ var xcxId=wepy.$instance.globalData.xcxId;
 
 export default class signin extends base {
 
-  static async jscode2session () {
-    const res = await wepy.login();
-    var nonce_str = rand.getRand();//随机数
-    var postParams=[];
-    postParams[0]=["nonce_str",nonce_str];
-    postParams[1]=["status","jscode2session"];
-    postParams[2]=["jscode",res.code];
-    postParams[3]=["xcxId",xcxId];
-    var signVal=sign.createSign(postParams,appId);//签名
-    const url = `${this.baseUrl2}/api/signin/getOpenid.do?jscode=${res.code}&xcxId=${xcxId}&nonce_str=${nonce_str}&sign=${signVal}&status=jscode2session`;
-    return await this.get(url).then(data => {
-      return data == null ? [] : data;
-    });
-
-  }
   static async loadCalendar(paramDate){
     return this.initCalendar(paramDate);
   }

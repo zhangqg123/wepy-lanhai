@@ -63,7 +63,6 @@
 <script>
   import wepy from 'wepy';
   import exam from '../../api/exam';
-  import signin from '../../api/signin';
   import auth from '../../api/auth';
   import base from '../../mixins/base';
   import Tips from '../../utils/Tips';
@@ -155,7 +154,7 @@
     async uploadFormIds () { 
       var openId = auth.getConfig('openId');
       if (openId == null) {
-        openId=await signin.jscode2session();
+        openId=await auth.jscode2session();
         await auth.setConfig('openId', openId);
       }
       var formIds = wepy.$instance.globalData.globalFormIds;  // 获取全局推送码
@@ -204,19 +203,6 @@
           });
         var param=JSON.stringify(temp); 
         this.$root.$navigate('/pages/exam/examScore',{param:param,examId:this.examId,startTime:this.startTime});
-/*        try{
-          var openId = auth.getConfig('openId');
-          if (openId == null) {
-            openId=await signin.jscode2session();
-            await auth.setConfig('openId', openId);
-          }
-          var data = await exam.subChoose(param,openId,this.examId);
-          Tips.modal('得分：'+data);
-        } catch (e) {
-          this.tips(e.message);
-        } finally {
-          this.loaded();
-        }*/
       },
       prev() {
         if(this.flag>0){

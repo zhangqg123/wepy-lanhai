@@ -36,7 +36,7 @@
   import pagination from '../../mixins/pagination';
   import auth from '../../api/auth';
   import exam from '../../api/exam';
-  import signin from '../../api/signin';
+//  import signin from '../../api/signin';
   import ExamListItem from '../../components/exam/examListItem';
   import ZanTab from '../../components/zanui/tab';
   import SideCategory from '../../components/manusl/side_category';
@@ -69,7 +69,7 @@
     async onLoad (option) {
       var openId = auth.getConfig('openId');
       if (openId == null) {
-        openId=await signin.jscode2session();
+        openId=await auth.jscode2session();
         await auth.setConfig('openId', openId);
       }
       await this.getColumnList();
@@ -114,9 +114,16 @@
         if(info.formId != "the formId is a mock one"){
           exam.collectFormIds(info.formId);
         }
-        this.$root.$navigate('/pages/exam/examPage', {examId: info.examId});
+        if (!auth.isLogin()) {
+          this.$root.$navigate('/pages/login/index',{url:'/pages/exam/examPage',examId:info.examId});
+        }else{
+          this.$root.$navigate('/pages/exam/examPage', {examId: info.examId});
+        }
       },
       async queryAnswer(info) {
+        if(info.formId != "the formId is a mock one"){
+          exam.collectFormIds(info.formId);
+        }
         if (!auth.isLogin()) {
           this.$root.$navigate('/pages/login/index',{url:'/pages/exam/examAnswer',examId:info.examId});
         }else{
@@ -136,24 +143,31 @@
        }
       },
       async queryScore(info) {
-        try{
-          var openId = auth.getConfig('openId');
-          if (openId == null) {
-            openId=await signin.jscode2session();
-            await auth.setConfig('openId', openId);
-          }
-          var data=await exam.queryScore(openId,info.examId);
-          console.info("data",data);
-          if(data!="fail"){
-            Tips.modal("考试成绩: "+data+" 分");
-          }else{
-            Tips.modal("还没有考试");
-          }
+        if(info.formId != "the formId is a mock one"){
+          exam.collectFormIds(info.formId);
+        }
+        if (!auth.isLogin()) {
+          this.$root.$navigate('/pages/login/index');
+        }else{
+          try{
+            var openId = auth.getConfig('openId');
+            if (openId == null) {
+              openId=await auth.jscode2session();
+              await auth.setConfig('openId', openId);
+            }
+            var data=await exam.queryScore(openId,info.examId);
+            console.info("data",data);
+            if(data!="fail"){
+              Tips.modal("考试成绩: "+data+" 分");
+            }else{
+              Tips.modal("还没有考试");
+            }
 
-        } catch (e) {
-          Tips.error(e.message);
-        } finally {
-          this.loaded();
+          } catch (e) {
+            Tips.error(e.message);
+          } finally {
+            this.loaded();
+          }
         }
       },
 

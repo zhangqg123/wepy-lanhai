@@ -120,7 +120,6 @@
     };
 
     collect(formId){
-      console.info("formId",formId);
       if(formId != "the formId is a mock one"){
         exam.collectFormIds(formId);
       }
@@ -150,18 +149,25 @@
       async follow (e) {
         try{
           this.collect(e.detail.formId);
+          var formIds = wepy.$instance.globalData.globalFormIds;  // 获取全局推送码
+          console.info("formIds",formIds);
+          if (formIds.length>0) {
+              formIds = JSON.stringify(formIds);  // 转换成JSON字符串
+              wepy.$instance.globalData.globalFormIds = [];  
+              await exam.uploadFormIds(formIds);
+          }
           var data = await auth.userFollow();
           console.info("data",data);
+          if(data.success==true){
+            this.$navigate('../exam/scoreList',{phone: data.obj.phone,soid:data.obj.openid});
+          }else{
+  //          Tips.modal("没有关注的学生");
+            this.$navigate('../login/follow');          
+          }
         } catch (e) {
           Tips.error(e.message);
         } finally {
           this.loaded();
-        }
-        if(data.success==true){
-          this.$navigate('../exam/scoreList',{phone: data.obj.phone,soid:data.obj.openid});
-        }else{
-//          Tips.modal("没有关注的学生");
-          this.$navigate('../login/follow');          
         }
       }
     };

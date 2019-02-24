@@ -9,7 +9,7 @@ export default class Pagination {
     // 起始数据
     this.start = 1;
     // 加载数据条数
-    this.count = 6;
+    this.count = 8;
     // 数据处理函数
     this.processFunc = processFunc;
     // 正在加载中

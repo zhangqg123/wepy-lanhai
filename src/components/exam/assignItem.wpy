@@ -1,0 +1,96 @@
+<template>
+    <form bindsubmit="startExam({{assign.examId}})" report-submit='true'>
+      <view class="news-item">
+        <view class="news-item-left">
+          <view class="news-item-title mb20"><text class="xxl">{{assign.taskName}}</text></view>
+          <view  class="news-item-content mt20"><text class="xl">{{assign.assignDate}}</text></view>
+        </view>
+        <view class="news-item-right column-center">
+          <button plain form-type="submit" >
+              <image class="news-image mt20"  src="/images/icons/more.png"></image>
+          </button>
+        </view>
+      </view>
+    </form>            
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import auth from '../../api/auth';
+  export default class AssignItem extends wepy.component {
+    props = {
+      assign: {}
+    };
+    data = {};
+    methods = {
+      async startExam(examId,e) {
+        var formId=e.detail.formId;
+        this.$emit('startExam',{examId: examId,formId:formId})
+//        this.$emit('startExam',{examId: examId})
+      },
+      async queryScore(examId) {
+        this.$emit('queryScore', {examId:examId});
+      },
+      async queryAnswer(examId) {
+        this.$emit('queryAnswer', {examId:examId});
+      },
+    };
+  }
+</script>
+
+<style lang="scss">
+  @import "../../styles/variable";
+
+  .news-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-left: 8px;
+    padding-top: 8px;
+    padding-right: 8px;
+    padding-bottom: 8px;
+    margin-left: 8px;
+    margin-right: 8px;
+    margin-top: 8px;
+    background-color: #fff;
+    border: 1px solid #eaeaea;
+    border-bottom: 1px solid #d0d0d0;
+    border-radius: 5px;
+    position: relative;
+  }
+
+  .news-item-right {
+    width: 60px;
+    height: 60px;
+//    position: absolute;
+  }
+  .news-item-left {
+    width: 60px;
+    height: 60px;
+    margin-left: 20rpx;
+  }
+  .news-image {
+    width: 40px;
+    height: 40px;
+  }
+
+  .news-item-title {
+    word-break:keep-all;
+    white-space:nowrap;
+    width: 500rpx;
+    height: 50rpx;
+//    font-size:14pt;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .news-item-content {
+//    font-size: 12pt;
+    width: 500rpx;
+    height:101rpx;
+    overflow:hidden;
+    text-overflow:ellipsis;
+//    mergin-top:-30rpx;
+    color:#a9a9a9;
+//    line-height:35rpx;
+  }
+</style>

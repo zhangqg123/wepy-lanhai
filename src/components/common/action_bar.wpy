@@ -56,6 +56,13 @@
 
 <style lang="scss">
   @import "../../styles/variable";
+.my-plain-btn{
+  border:none;
+  width:375rpx;
+  height:100rpx;
+  padding:0;
+  vertical-align:middle;
+}
   .action-bar-placeholder{
     height: 120rpx;
     width: 100%;

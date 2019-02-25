@@ -193,7 +193,11 @@
       radioChange: function (e) {
         this.question.choose=e.detail.value;
       },  */
-      async sub() {
+      async sub(info) {
+        console.info("info",info);
+        if(info.formId != "the formId is a mock one"){
+          exam.collectFormIds(info.formId);
+        }
         this.uploadFormIds();
         const temp = await this.questions.map(item => {
             return {
@@ -204,13 +208,21 @@
         var param=JSON.stringify(temp); 
         this.$root.$navigate('/pages/exam/examScore',{param:param,examId:this.examId,startTime:this.startTime});
       },
-      prev() {
+      prev(info) {
+        console.info("info",info);
+        if(info.formId != "the formId is a mock one"){
+          exam.collectFormIds(info.formId);
+        }
         if(this.flag>0){
           this.flag--;          
           this.renderQuestion(this.flag);
         }
       },
-      next() {
+      next(info) {
+        console.info("info",info);
+        if(info.formId != "the formId is a mock one"){
+          exam.collectFormIds(info.formId);
+        }
         if(this.flag<this.length-1){
           this.flag++;
           this.renderQuestion(this.flag);

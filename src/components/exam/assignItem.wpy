@@ -1,17 +1,13 @@
 <template>
-    <form bindsubmit="startExam({{assign.examId}})" report-submit='true'>
-      <view class="news-item">
+      <view class="news-item" @tap="startExam({{assign.examId}})">
         <view class="news-item-left">
           <view class="news-item-title mb20"><text class="xxl">{{assign.taskName}}</text></view>
           <view  class="news-item-content mt20"><text class="xl">{{assign.assignDate}}</text></view>
         </view>
         <view class="news-item-right column-center">
-          <button plain form-type="submit" >
-              <image class="news-image mt20"  src="/images/icons/more.png"></image>
-          </button>
+              <image class="news-image"  src="/images/icons/more.png"></image>
         </view>
       </view>
-    </form>            
 </template>
 
 <script>

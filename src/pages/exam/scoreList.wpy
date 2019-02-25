@@ -88,8 +88,11 @@
 
 
     methods = {
-      retExamList() {
-        console.log("retun examList");
+      retExamList(info) {
+        console.info("info",info);
+        if(info.formId != "the formId is a mock one"){
+          exam.collectFormIds(info.formId);
+        }
         this.$switch('../home/examList');
       },
 
@@ -117,7 +120,11 @@
           this.loaded();
         }
       },
-      examAnswer() {
+      examAnswer(info) {
+        console.info("info",info);
+        if(info.formId != "the formId is a mock one"){
+          exam.collectFormIds(info.formId);
+        }
         this.$root.$navigate('/pages/exam/examAnswer', {examId: this.examId});        
       }
     };

@@ -1,20 +1,28 @@
 <template>
   <view class="action-bar-placeholder"></view>
   <view class="action-bar row-center fixed-bottom" wx:if="{{noCancel == 0}}">
-    <view class="action secondary-action row-center" @tap="tap">
-      <text>{{examListText}}</text>
-    </view>
-    <view class="action {{okType}}-acton row-center" @tap="answer">
-      <text>{{answerText}}</text>
-    </view>
+    <form bindsubmit="tap" report-submit='true' class="action">
+      <button form-type="submit" class="but-action secondary-action row-center">
+        <text>{{examListText}}</text>
+      </button>
+    </form>  
+    <form bindsubmit="answer" report-submit='true' class="action">
+      <button form-type="submit" class="but-action {{okType}}-acton row-center">
+        <text>{{answerText}}</text>
+      </button>
+    </form>  
   </view>
   <view class="action-bar row-center fixed-bottom" wx:else>
-    <view class="action {{okType}}-acton row-center" @tap="tap">
-      <text>{{examListText}}</text>
-    </view>
-    <view class="action secondary-action row-center" @tap="back">
-      <text>{{cancelText}}</text>
-    </view>
+    <form bindsubmit="tap" report-submit='true' class="action">
+      <button form-type="submit" class="but-action {{okType}}-acton row-center">
+        <text>{{examListText}}</text>
+      </button>
+    </form>  
+    <form bindsubmit="back" report-submit='true' class="action">
+      <button form-type="submit" class="but-action secondary-action row-center">
+        <text>{{cancelText}}</text>
+      </button>
+    </form>  
   </view>
 
 </template>
@@ -41,11 +49,13 @@
       }
     };
     methods = {
-      tap() {
-        this.$emit('tap');
+      tap(e) {
+        var formId=e.detail.formId;
+        this.$emit('tap',{formId:formId});
       },
-      answer() {
-        this.$emit('answer');
+      answer(e) {
+        var formId=e.detail.formId;
+        this.$emit('answer',{formId:formId});
       },
       back() {
         wepy.navigateBack();
@@ -77,6 +87,11 @@
     .action{
       height: 100%;
       width: 50%;
+//      text{font-size: $text-xl;}
+    }
+    .but-action{
+      height: 100%;
+      width: 100%;
       text{font-size: $text-xl;}
     }
 

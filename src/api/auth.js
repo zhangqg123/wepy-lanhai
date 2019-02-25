@@ -10,6 +10,19 @@ var xcxId=wepy.$instance.globalData.xcxId;
 var usertype=wepy.$instance.globalData.usertype;
 
 export default class auth extends base {
+
+  static async changeDept(deptid) {
+    var nonce_str = rand.getRand();//随机数
+    var postParams=[];
+    postParams[0]=["nonce_str",nonce_str];
+    postParams[1]=["status","dept"];
+    postParams[2]=["deptid",deptid];
+    var signVal=sign.createSign(postParams,appId);//签名
+    const url = `${this.baseUrl2}/api/exam/changeDept.do?nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=dept&deptid=${deptid}`;
+    const data = await this.get(url);
+    return data;
+  }
+
   static async dept() {
     var nonce_str = rand.getRand();//随机数
     var postParams=[];
@@ -86,7 +99,7 @@ export default class auth extends base {
     postParams[0]=["nonce_str",nonce_str];
     postParams[1]=["status","registerCode"];
     var signVal=sign.createSign(postParams,appId);//签名
-    const url = `${this.baseUrl2}/api/zwzx/registerCode.do?nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=registerCode`;
+    const url = `${this.baseUrl2}/api/exam/registerCode.do?nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=registerCode`;
     const data = await this.get(url);
     return data.attributes;
   }

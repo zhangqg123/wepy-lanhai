@@ -50,11 +50,11 @@
             </view>
             <view class="weui-cell__ft weui-cell__ft_in-access"></view>
           </view>
-          <view class="weui-cell" >
+          <view class="weui-cell" @tap="showInner">
             <view class="weui-cell__hd">
-              <view class="weui-label"><image class="icon mr10" src="/images/icons/package.png"/><text class="primary xl">地址</text></view>
+              <view class="weui-label"><image class="icon mr10" src="/images/icons/package.png"/><text class="primary xl">班级</text></view>
             </view>
-            <view class="weui-cell__bd">
+            <view class="weui-cell__bd">{{input.deptName ? input.deptName : '请选择班级'}}
             </view>
             <view class="weui-cell__ft weui-cell__ft_in-access"></view>
           </view>
@@ -69,6 +69,21 @@
 
   </view>
 
+  <!-- 分类 -->
+  <SliderPanel :display.sync="isInnerDisplay" btn='false'>
+    <view slot="title">班级</view>
+    <view slot="content" class="weui-cells-form">
+      <radio-group id="deptName" key="" bindchange="radioChange" @tap="selectInner">
+        <label class="weui-cell weui-check__label" wx:for="{{innerDept}}" wx:key="value">
+          <radio class="weui-check" value="{{item.deptName}}" checked="{{input.deptName == item.deptName}}"/>
+          <view class="weui-cell__bd">{{item.deptName}}</view>
+          <view class="weui-cell__ft weui-cell__ft_in-radio" wx:if="{{input.deptName == item.deptName}}">
+            <icon class="weui-icon-radio" type="success_no_circle" size="16"></icon>
+          </view>
+        </label>
+      </radio-group>
+    </view>
+  </SliderPanel>
 
 </template>
 
@@ -77,14 +92,19 @@
   import auth from '../../api/auth';
   import base from '../../mixins/base';
   import input from '../../mixins/input';
+  import Cache from '../../utils/Cache';
   import Tips from '../../utils/Tips';
   import Event from '../../utils/Event';
   import FormTips from '../../components/weui/tips';
+  import SliderPanel from '../../components/common/slider_panel';
  
   export default class UserStatus extends wepy.page {
     def = {
       userInfo:{
       },
+      isInnerDisplay: 'false',
+      innerDept: [],
+      input:{},
       status:0,
       init: false,
       display:false
@@ -96,11 +116,15 @@
         if (loginCode != null) {
           this.loginCode=loginCode;
           const userInfo = await auth.userInfo(loginCode);
+          console.info("userInfo",userInfo);
           this.userInfo=userInfo;
           this.userInfo.phone=userInfo.phone;
           if (userInfo!= null) {
             this.userInfo.phone=userInfo.phone;
             this.status=userInfo.status;
+            this.innerDept = await Cache.dept();
+
+            this.input.deptName = this.innerDept.find(item => item.id == this.userInfo.deptid).deptName;
           }
         }
       } catch (e) {
@@ -109,6 +133,34 @@
       }
     };
     methods = {
+      async radioChange(e) {
+
+        var deptid = this.innerDept.find(item => item.deptName == e.detail.value).id;
+        console.info("deptid",deptid);
+        
+        try{
+          const loginCode = auth.getConfig('login_code');
+          if (loginCode != null) {
+            var data=await auth.changeDept(deptid);
+            if(data.success==true){
+              this.input.deptName=e.detail.value;
+            }
+          }
+        } catch (e) {
+          this.tips(e.message);
+        } finally {
+          this.loaded();
+        }
+
+      },
+      // 选择分类
+      selectInner() {
+        this.isInnerDisplay = 'false';
+      },
+      // 展现分类
+      showInner() {
+        this.isInnerDisplay = 'true';
+      },
       // 跳转到受理页面
       admissibility() {
         const param = {
@@ -174,7 +226,7 @@
 //      FlowList: FlowList,
 //      MaterialList: MaterialList,
 //      ImageUploader: ImageUploader,
-//      SliderPanel: SliderPanel,
+      SliderPanel: SliderPanel,
 //      ActionPanel: ActionPanel
     };
     mixins = [base, input];

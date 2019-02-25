@@ -43,7 +43,7 @@
               <view class="weui-label">选择班级</view>
             </view>
             <view class="weui-cell__bd">
-              {{input.inner ? input.inner : '请选择班级'}}
+              {{input.deptName ? input.deptName : '请选择班级'}}
             </view>
             <view class="weui-cell__ft weui-cell__ft_in-access"></view>
           </view>
@@ -79,11 +79,11 @@
   <SliderPanel :display.sync="isInnerDisplay" btn='false'>
     <view slot="title">班级</view>
     <view slot="content" class="weui-cells-form">
-      <radio-group id="inner" key="" bindchange="radio" @tap="selectInner">
-        <label class="weui-cell weui-check__label" wx:for="{{innerCategories}}" wx:key="value">
-          <radio class="weui-check" value="{{item.deptName}}" checked="{{input.inner == item.deptName}}"/>
+      <radio-group id="deptName" key="" bindchange="radio" @tap="selectInner">
+        <label class="weui-cell weui-check__label" wx:for="{{innerDept}}" wx:key="value">
+          <radio class="weui-check" value="{{item.deptName}}" checked="{{input.deptName == item.deptName}}"/>
           <view class="weui-cell__bd">{{item.deptName}}</view>
-          <view class="weui-cell__ft weui-cell__ft_in-radio" wx:if="{{input.inner == item.deptName}}">
+          <view class="weui-cell__ft weui-cell__ft_in-radio" wx:if="{{input.deptName == item.deptName}}">
             <icon class="weui-icon-radio" type="success_no_circle" size="16"></icon>
           </view>
         </label>
@@ -102,6 +102,7 @@
   import VCode from '../../components/weui/vcode';
   import Tips from '../../utils/Tips';
   import SliderPanel from '../../components/common/slider_panel';
+  import Cache from '../../utils/Cache';
   import WxUtils from '../../utils/WxUtils';
   import Copyright from '../../components/common/copyright';
   export default class Reigister extends wepy.page {
@@ -110,7 +111,8 @@
       loginCode:null,
       status: 0,
       isInnerDisplay: 'false',
-      innerCategories: [],
+      innerDept: [],
+      input:{},
       loginMessage: {}
     };
     data = {...this.def};
@@ -120,13 +122,15 @@
         openId=await auth.jscode2session();
         await auth.setConfig('openId', openId);
       }
-      this.input.reasonIndex = 0;
-      this.innerCategories = await auth.dept();
-      console.info("this.innerCategories",this.innerCategories);
+      this.innerDept = await Cache.dept();
+      console.info("this.innerDept",this.innerDept);
       this.loaded();
     }
 
     methods = {
+      radio(e) {
+        console.info("radio",e.detail.value);
+      },
       // 选择分类
       selectInner() {
         this.isInnerDisplay = 'false';
@@ -217,11 +221,11 @@
         }
       },
       async userRegister({detail}) {
-        if (!this.input.inner) {
+        if (!this.input.deptName) {
           this.tips('请选择班级');
           return;
         }
-        var deptid = this.innerCategories.find(item => item.deptName == this.input.inner).id;
+        var deptid = this.innerDept.find(item => item.deptName == this.input.deptName).id;
         console.info("deptid",deptid);
         // 覆盖对象
         Object.assign(this.loginMessage, detail.value);

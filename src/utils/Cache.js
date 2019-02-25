@@ -1,16 +1,14 @@
 import exam from '../api/exam';
+import auth from '../api/auth';
 
 export default class Cache {
   static cache = new Map();
   static _debug = false;
 
-  /**
-   * 获取部门
-   */
-  static async management() {
-    const KEY = 'MANAGEMENT';
+  static async dept() {
+    const KEY = 'DEPT';
     if (this.isExpired(KEY)) {
-      const info = await zwzx.management();
+      const info = await auth.dept();
       this.set(KEY, info);
     }
     return this.cache.get(KEY);

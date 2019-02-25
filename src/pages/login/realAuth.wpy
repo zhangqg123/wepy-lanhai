@@ -20,7 +20,7 @@
         <view class="weui-cell">
           <view class="weui-cell__hd" >
             <view class="weui-label">
-              <text class="primary xl" >中级认证</text>
+              <text class="primary xl" >普通认证</text>
             </view>
           </view>
         </view>

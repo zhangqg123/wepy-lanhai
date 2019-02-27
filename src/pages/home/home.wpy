@@ -60,7 +60,10 @@
       <form bindsubmit="toArticlesContent({{item.id}})" report-submit='true' class="action">
         <button form-type="submit" class="btn-item">
           <image class="news-image"  src="{{param.adUpload}}{{item.imageHref}}"></image>
-          <text class="btn-item-title ml20 xl">{{item.title}}</text>
+          <view class="column-around">
+            <text class="btn-item-title ml20 xl">{{item.title}}</text>
+            <text class="btn-item-title ml20 lg">{{item.summary}}</text>
+          </view>
         </button>
       </form>
     </repeat>
@@ -149,7 +152,7 @@
     methods = {
       async menu (menu,e) {
         this.collect(e.detail.formId);
-        this.$navigate(`../cms/articleList?columnId=${menu.id}&columnName=${menu.name}`);
+        this.$navigate(`../cms/articleList?columnId=${menu.id}&columnName=${menu.name}`); 
       },
       toArticlesContent(articleId,e) {
         var formId=e.detail.formId;

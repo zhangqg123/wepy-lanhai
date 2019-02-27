@@ -35,6 +35,20 @@ export default class auth extends base {
     return data;
   }
 
+  static async userList(deptid) {
+    var nonce_str = rand.getRand();//随机数
+    var postParams=[];
+    postParams[0]=["nonce_str",nonce_str];
+    postParams[1]=["status","dept"];
+    postParams[2]=["deptid",deptid];
+    postParams[3]=["xcxId",xcxId];
+    var signVal=sign.createSign(postParams,appId);//签名
+    const url = `${this.baseUrl2}/api/exam/userList.do?nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=dept&deptid=${deptid}&xcxId=${xcxId}`;
+    console.info("url",url);
+    const data = await this.get(url);
+    return data;
+  }
+
   static async dept() {
     var nonce_str = rand.getRand();//随机数
     var postParams=[];

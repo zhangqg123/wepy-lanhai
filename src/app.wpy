@@ -115,7 +115,8 @@
         'pages/login/follow',
         'pages/login/register',
         'pages/login/status',
-        'pages/student/dept'
+        'pages/student/dept',
+        'pages/student/deptUser'
       ],
       "permission": {
         "scope.userLocation": {

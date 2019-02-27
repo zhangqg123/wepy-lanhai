@@ -2,20 +2,11 @@
 
 
   <view style="margin-top:8px;">
-    <repeat for="{{page.list}}" key="index" index="index" item="item">
-      <!--  <view class="news-item" @tap="toArticlesContent({{item.id}})">
-        <view class="news-item-left">
-          <view class="news-item-title"><text class="xl">{{item.title}}</text></view>
-          <view  class="news-item-content"><text>{{item.summary}}</text></view>
-        </view>
-        <view class="news-item-right">
-          <image class="news-image"  src="{{param.adUpload}}{{item.imageHref}}"></image>
-        </view>
-      </view> -->
-      <form bindsubmit="toArticlesContent({{item.id}})" report-submit='true' class="action">
+    <repeat for="{{deptList}}" key="index" index="index" item="item">
+      <form bindsubmit="toDept({{item.id}})" report-submit='true' class="action">
         <button form-type="submit" class="btn-item">
-          <image class="news-image"  src="{{param.adUpload}}{{item.imageHref}}"></image>
-          <text class="btn-item-title ml20 xl">{{item.title}}</text>
+          <image class="icon-xl"  src="/images/icons/status-2.png"></image>
+          <text class="btn-item-title ml20 xl">{{item.deptName}}</text>
         </button>
       </form>
     </repeat>
@@ -30,47 +21,27 @@
   import base from '../../mixins/base';
   import Event from '../../utils/Event';
   import Tips from '../../utils/Tips';
+  import Cache from '../../utils/Cache';
   import pagination from '../../mixins/pagination';
   import SwiperBar from '../../components/template/swiper_bar';
   let interval = null;
 
   export default class Dept extends wepy.page {
     def = {
-      param: {
-        adImgs: {},
-        adUpload: null
-      },
-      url:wepy.$instance.globalData.baseUrl2,
-      page: {
-        list: []
-      },
-      array: [],
-      menu: [],
+      deptList: {},
 
       init: false,
       show: false,
-      navUrl: '../manusl/user_management?type=home'
-//      limit: {}
     };
     data = {...this.def};
     async onLoad (option) {
       try {
-//        this.uploadFormIds();
-        const upload = wepy.$instance.globalData.baseUrl2+'/upload/img/cms/';
-        this.param.adUpload = upload;
 
-        const json = await exam.getMenuList();
-        this.param.adImgs=json;
-        this.menu = json;
-        //初始化加载第一个栏目文章信息
-        var columnId = this.menu[0].id;
-        wepy.$instance.globalData.createBy=this.menu[0].createBy;
         wx.setNavigationBarTitle({
-          title: this.menu[0].name  //页面标题为动态参数
+          title: "班级列表"  //页面标题为动态参数
         })
-        this.active = columnId;
-        this.page = exam.articleList("all");
-        await this.next();
+        this.deptList = await Cache.dept();
+        console.info("this.deptList",this.deptList);
 
         Event.listen(Event.USER_LOGOUT, this.clear.bind(this), this);
       } catch (e) {
@@ -102,19 +73,14 @@
       return Tips.share(title, url, title);
     }
     methods = {
-      async menu (menu,e) {
-        this.collect(e.detail.formId);
-        this.$navigate(`../cms/articleList?columnId=${menu.id}&columnName=${menu.name}`);
-      },
-      toArticlesContent(articleId,e) {
+      toDept(deptid,e) {
+        console.info("deptid",deptid);
         var formId=e.detail.formId;
         if(formId !=null && formId != "the formId is a mock one"){
           exam.collectFormIds(formId);
         }
-        console.info("formId",formId);
-        wx.navigateTo({
-          url: '../cms/article?articleId=' + articleId
-        });
+//        this.$navigate(`../student/deptUser?deptid=${deptid}`); 
+        this.$root.$navigate('/pages/student/deptUser', {deptid: deptid});
       },
       async scan() {
         try {

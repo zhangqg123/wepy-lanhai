@@ -27,7 +27,7 @@
       ivKey: "chMQRwqC2xIIXqLV",
 //      baseUrl2: 'https://hunchun.zqgzht.com', 
       baseUrl2: 'http://192.168.0.199:8080/jeecg',
-      version: 'v1.0.7'
+      version: 'v1.0.8'
     };
     constructor() {
       super();
@@ -103,18 +103,19 @@
         'pages/home/myproject',
         'pages/home/assignList',
         'pages/home/examList',
+        'pages/cms/article',
+        'pages/cms/articleList',
+        'pages/exam/examAnswer',
+        'pages/exam/examPage',
+        'pages/exam/examScore',
+        'pages/exam/scoreList',
         'pages/login/realAuth',
         'pages/login/idCardAuth',
         'pages/login/index',
         'pages/login/follow',
         'pages/login/register',
         'pages/login/status',
-        'pages/cms/article',
-        'pages/cms/articleList',
-        'pages/exam/examAnswer',
-        'pages/exam/examPage',
-        'pages/exam/examScore',
-        'pages/exam/scoreList'
+        'pages/student/dept'
       ],
       "permission": {
         "scope.userLocation": {
@@ -136,7 +137,7 @@
             iconPath: 'images/tab/manage.png',
             selectedIconPath: 'images/tab/manage-active.png',
             pagePath: 'pages/home/home',
-            text: '概况'
+            text: '首页'
           },
           {
             iconPath: 'images/tab/order.png',

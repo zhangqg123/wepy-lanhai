@@ -1,50 +1,5 @@
 <template>
-  <view>
-    <SwiperBar :param.sync="param" />
-  </view>
 
-  <view>
-
-    <!--操作区域-->
-    <view class="operation-box">
-      <view class="operation-row row-around" >
-        <form bindsubmit="menu({{menu[0]}})" report-submit='true'>
-          <button plain form-type="submit" >
-            <view class="operation-row column-center">
-              <image src="/images/home/zw1.png"/>
-              <text>{{menu[0].name}}</text>
-            </view>
-          </button>
-        </form>            
-        <form bindsubmit="menu({{menu[1]}})" report-submit='true'>
-          <button plain form-type="submit" >
-            <view class="operation-row column-center">
-              <image src="/images/home/zw2.png"/>
-              <text>{{menu[1].name}}</text>
-            </view>
-          </button>
-        </form>            
-        <form bindsubmit="menu({{menu[2]}})" report-submit='true'>
-          <button plain form-type="submit" >
-            <view class="operation-row column-center">
-              <image src="/images/home/zw3.png"/>
-              <text>{{menu[2].name}}</text>
-            </view>
-          </button>
-        </form>            
-         <form bindsubmit="menu({{menu[3]}})" report-submit='true'>
-          <button plain form-type="submit" >
-            <view class="operation-row column-center">
-              <image src="/images/home/zw4.png"/>
-              <text>{{menu[3].name}}</text>
-            </view>
-          </button>
-        </form>            
-     </view>
-
-    </view>
-  </view>
-  <view class="tab-border" />
 
   <view style="margin-top:8px;">
     <repeat for="{{page.list}}" key="index" index="index" item="item">
@@ -79,7 +34,7 @@
   import SwiperBar from '../../components/template/swiper_bar';
   let interval = null;
 
-  export default class HomeIndex extends wepy.page {
+  export default class Dept extends wepy.page {
     def = {
       param: {
         adImgs: {},

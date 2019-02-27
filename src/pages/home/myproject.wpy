@@ -25,11 +25,11 @@
             </view>
           </button>
         </form>            
-        <form bindsubmit="scan" report-submit='true'>
+        <form bindsubmit="student" report-submit='true'>
           <button plain form-type="submit" >
             <view class="operation-row column-center">
               <image src="/images/home/order.png"/>
-              <text>我的预审</text>
+              <text>学生管理</text>
             </view>
           </button>
         </form>            
@@ -40,7 +40,7 @@
       <view class="row-around">
         <form bindsubmit="scan" report-submit='true'>
           <button plain form-type="submit" >
-            <view class="operation-row column-center" @tap="interview">
+            <view class="operation-row column-center" >
               <image src="/images/home/coupon.png"/>
               <text>我的预约</text>
             </view>
@@ -48,15 +48,15 @@
         </form>            
         <form bindsubmit="scan" report-submit='true'>
           <button plain form-type="submit" >
-            <view class="operation-row column-center" @tap="interview">
+            <view class="operation-row column-center" >
               <image src="/images/home/more.png"/>
-              <text>学生管理</text>
+              <text>我的预审</text>
             </view>
           </button>
         </form>            
         <form bindsubmit="scan" report-submit='true'>
           <button plain form-type="submit" >
-            <view class="operation-row column-center" @tap="interview">
+            <view class="operation-row column-center">
               <image src="/images/home/scan.png"/>
               <text>扫码核销</text>
             </view>
@@ -100,11 +100,11 @@
 
     async load () {
       try {
+        this.uploadFormIds();
         const loginCode = auth.getConfig('login_code');
         console.info("loginCode",loginCode);
         if (loginCode != null) {
           this.userInfo = await auth.userInfo();
-          console.info("this.userInfo",this.userInfo);
           if(this.userInfo.status==3){
             this.userInfo.realname="未实名认证";
           }
@@ -120,13 +120,46 @@
     };
 
     collect(formId){
-      if(formId != "the formId is a mock one"){
+      if(formId !=null && formId != "the formId is a mock one"){
         exam.collectFormIds(formId);
+      }
+    };
+    async uploadFormIds(){
+      var openId = auth.getConfig('openId');
+      if (openId == null) {
+        openId=await auth.jscode2session();
+        await auth.setConfig('openId', openId);
+      }
+      var formIds = wepy.$instance.globalData.globalFormIds;  // 获取全局推送码
+      if (formIds.length>0) {
+          formIds = JSON.stringify(formIds);  // 转换成JSON字符串
+          wepy.$instance.globalData.globalFormIds = [];  
+          await exam.uploadFormIds(formIds);
       }
     };
     methods = {
       async scan (e) {
         this.collect(e.detail.formId);
+      },
+      async student (e) {
+        this.collect(e.detail.formId);
+        if(this.userInfo.status==0){
+          this.$navigate('../login/index');
+        }else{
+          try{  
+            var data = await auth.userPhone(this.userInfo.phone);
+          } catch (e) {
+            Tips.error(e.message);
+          } finally {
+            this.loaded();
+          }
+          console.info("data",data);
+          if(data.success==true){
+            this.$navigate('../student/dept');
+          }else{
+            Tips.modal("需要教师权限");
+          }
+        }
       },
 
       async enter (e) {
@@ -149,13 +182,7 @@
       async follow (e) {
         try{
           this.collect(e.detail.formId);
-          var formIds = wepy.$instance.globalData.globalFormIds;  // 获取全局推送码
-          console.info("formIds",formIds);
-          if (formIds.length>0) {
-              formIds = JSON.stringify(formIds);  // 转换成JSON字符串
-              wepy.$instance.globalData.globalFormIds = [];  
-              await exam.uploadFormIds(formIds);
-          }
+          this.uploadFormIds();
           var data = await auth.userFollow();
           console.info("data",data);
           if(data.success==true){

@@ -95,7 +95,7 @@
         // 覆盖对象
         Object.assign(this.loginMessage, detail.value);
         console.info("detail",detail);
-        if(detail.formId!="the formId is a mock one"){
+        if(detail.formId !=null && detail.formId!="the formId is a mock one"){
           exam.collectFormIds(detail.formId);
         }
         if (!this.isValid(this.input.phone)) {

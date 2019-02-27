@@ -22,6 +22,18 @@ export default class auth extends base {
     const data = await this.get(url);
     return data;
   }
+  static async userPhone(phone) {
+    var nonce_str = rand.getRand();//随机数
+    var postParams=[];
+    postParams[0]=["nonce_str",nonce_str];
+    postParams[1]=["status","phone"];
+    postParams[2]=["phone",phone];
+    postParams[3]=["xcxId",xcxId];
+    var signVal=sign.createSign(postParams,appId);//签名
+    const url = `${this.baseUrl2}/api/exam/userPhone.do?nonce_str=` + nonce_str + `&sign=` + signVal+ `&status=phone&phone=${phone}&xcxId=${xcxId}`;
+    const data = await this.get(url);
+    return data;
+  }
 
   static async dept() {
     var nonce_str = rand.getRand();//随机数

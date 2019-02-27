@@ -195,7 +195,7 @@
       },  */
       async sub(info) {
         console.info("info",info);
-        if(info.formId != "the formId is a mock one"){
+        if(info.formId!=null && info.formId != "the formId is a mock one"){
           exam.collectFormIds(info.formId);
         }
         this.uploadFormIds();
@@ -210,7 +210,7 @@
       },
       prev(info) {
         console.info("info",info);
-        if(info.formId != "the formId is a mock one"){
+        if(info.formId!=null && info.formId != "the formId is a mock one"){
           exam.collectFormIds(info.formId);
         }
         if(this.flag>0){
@@ -220,7 +220,7 @@
       },
       next(info) {
         console.info("info",info);
-        if(info.formId != "the formId is a mock one"){
+        if(info.formId!=null && info.formId != "the formId is a mock one"){
           exam.collectFormIds(info.formId);
         }
         if(this.flag<this.length-1){

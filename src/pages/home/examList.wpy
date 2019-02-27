@@ -111,7 +111,7 @@
         this.reload();
       },
       async enterExam(info) {
-        if(info.formId != "the formId is a mock one"){
+        if(info.formId !=null && info.formId != "the formId is a mock one"){
           exam.collectFormIds(info.formId);
         }
         if (!auth.isLogin()) {
@@ -121,7 +121,7 @@
         }
       },
       async queryAnswer(info) {
-        if(info.formId != "the formId is a mock one"){
+        if(info.formId !=null && info.formId != "the formId is a mock one"){
           exam.collectFormIds(info.formId);
         }
         if (!auth.isLogin()) {
@@ -143,7 +143,7 @@
        }
       },
       async queryScore(info) {
-        if(info.formId != "the formId is a mock one"){
+        if(info.formId !=null && info.formId != "the formId is a mock one"){
           exam.collectFormIds(info.formId);
         }
         if (!auth.isLogin()) {

@@ -57,8 +57,9 @@
         var formId=e.detail.formId;
         this.$emit('answer',{formId:formId});
       },
-      back() {
-        wepy.navigateBack();
+      back(e) {
+        var formId=e.detail.formId;
+        this.$emit('back',{formId:formId});
       }
     }
   }

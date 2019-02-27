@@ -93,7 +93,7 @@
     methods = {
       async startExam(info) {
         console.info("info",info);
-        if(info.formId != "the formId is a mock one"){
+        if(info.formId !=null && info.formId != "the formId is a mock one"){
           exam.collectFormIds(info.formId);
         }
         var eids=info.examId.split(",");

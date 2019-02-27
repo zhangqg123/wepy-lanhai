@@ -29,10 +29,11 @@
     </view>
   </view>
     <!--操作栏-->
-    <ActionBar @tap.user="retExamList" @answer.user="examAnswer" examListText="考试列表" answerText="查看答案" noCancel="1"/> 
+    <ActionBar @tap.user="retExamList" @answer.user="examAnswer" @back.user="back"examListText="考试列表" answerText="查看答案" noCancel="1"/> 
 
 </view>
 </template>
+        
 
 <script>
   import wepy from 'wepy';
@@ -90,10 +91,17 @@
     methods = {
       retExamList(info) {
         console.info("info",info);
-        if(info.formId != "the formId is a mock one"){
+        if(info.formId !=null && info.formId != "the formId is a mock one"){
           exam.collectFormIds(info.formId);
         }
         this.$switch('../home/examList');
+      },
+      back(info) {
+        console.info("info",info);
+        if(info.formId !=null && info.formId != "the formId is a mock one"){
+          exam.collectFormIds(info.formId);
+        }
+        wepy.navigateBack();
       },
 
       async followCancel() {
@@ -122,7 +130,7 @@
       },
       examAnswer(info) {
         console.info("info",info);
-        if(info.formId != "the formId is a mock one"){
+        if(info.formId !=null && info.formId != "the formId is a mock one"){
           exam.collectFormIds(info.formId);
         }
         this.$root.$navigate('/pages/exam/examAnswer', {examId: this.examId});        

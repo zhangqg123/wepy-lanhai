@@ -6,6 +6,11 @@
         <rich-text class="art-content" nodes="{{article}}" ></rich-text>
       </view>
     </view>
+    <view class="h-gap"/>
+    <view class="assign-top  column" >
+        <text class="xxl default ml20"> 请选择答案 </text>
+    </view>
+
 <!--    <checkbox-group bindchange="checkboxChange">
       <view class="list-box column">
         <repeat for="{{answers}}" key="index" index="index" item="item">
@@ -198,6 +203,8 @@
         if(info.formId!=null && info.formId != "the formId is a mock one"){
           exam.collectFormIds(info.formId);
         }
+        await Tips.confirm('确认提交吗？');
+        console.log("submit");
         this.uploadFormIds();
         const temp = await this.questions.map(item => {
             return {
@@ -325,4 +332,9 @@
 .art-content {
   word-break:break-all;
 }
+  .assign-top {
+    height: 41px;
+    background-color: #FFF;
+  }  
+
 </style>

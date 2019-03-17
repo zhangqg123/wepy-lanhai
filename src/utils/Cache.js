@@ -5,6 +5,15 @@ export default class Cache {
   static cache = new Map();
   static _debug = false;
 
+  static async menuList() {
+    const KEY = 'MENU';
+    if (this.isExpired(KEY)) {
+      const info = await exam.getMenuList();
+      this.set(KEY, info);
+    }
+    return this.cache.get(KEY);
+  }
+
   static async dept() {
     const KEY = 'DEPT';
     if (this.isExpired(KEY)) {

@@ -32,14 +32,13 @@
             </view>
           </button>
         </form>            
-         <form bindsubmit="menu({{menu[3]}})" report-submit='true'>
-          <button plain form-type="submit" >
+          <button plain open-type="contact" >
             <view class="operation-row column-center">
               <image src="/images/home/zw4.png"/>
-              <text>{{menu[3].name}}</text>
+              <text>客服消息</text>
             </view>
           </button>
-        </form>            
+         
      </view>
 
     </view>
@@ -78,6 +77,7 @@
   import base from '../../mixins/base';
   import Event from '../../utils/Event';
   import Tips from '../../utils/Tips';
+  import Cache from '../../utils/Cache';
   import pagination from '../../mixins/pagination';
   import SwiperBar from '../../components/template/swiper_bar';
   let interval = null;
@@ -95,8 +95,8 @@
       array: [],
       menu: [],
 
-      init: false,
-      show: false,
+//      init: false,
+//      show: false,
       navUrl: '../manusl/user_management?type=home'
 //      limit: {}
     };
@@ -107,7 +107,7 @@
         const upload = wepy.$instance.globalData.baseUrl2+'/upload/img/cms/';
         this.param.adUpload = upload;
 
-        const json = await exam.getMenuList();
+        const json = await Cache.menuList();
         this.param.adImgs=json;
         this.menu = json;
         //初始化加载第一个栏目文章信息
@@ -127,21 +127,31 @@
         this.loaded();
       }
     };
+    async onShow() {
+      try {
+        this.page = exam.articleList("all");
+        await this.next();
+      } catch (e) {
+        Tips.modal(e.message);
+      } finally {
+        this.loaded();
+      }
+    };
     collect(formId){
       if(formId !=null && formId != "the formId is a mock one"){
         exam.collectFormIds(formId);
       }
     };
     clear() {
-      this.init = false;
+//      this.init = false;
     };
     onHide() {
-      this.show = false;
-      clearInterval(interval);
+//      this.show = false;
+//      clearInterval(interval);
     };
     onUnload() {
       // 清理定时器
-      clearInterval(interval);
+//      clearInterval(interval);
     };
 
     onShareAppMessage () {

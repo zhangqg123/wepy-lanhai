@@ -117,30 +117,5 @@ export default class signin extends base {
     }
     return data;
     
-    // 调用服务器端，实现签到入库
-/*    wx.request({
-      url: '${this.baseUrl2}/signin/rest.do?doSign',
-      data: {
-        openid: app.globalData.openid
-      },
-      header: {
-        'content-type': 'application/json' // 默认值
-      },
-      success: res => {
-        // 签到成功给出提示
-        wx.showToast({
-          title: '签到成功',
-          icon: 'success',
-          duration: 2000
-        }) 
-        //刷新日历
-        var now = new Date();//当前时间
-        this.initCalendar(now);
-      },
-      fail: function (res) {
-        console.log(res);
-      }
-    });
-*/
   };
 }

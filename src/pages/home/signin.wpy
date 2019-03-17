@@ -21,7 +21,9 @@
 
   <!-- 签到 -->
   <view class="row-center">
-    <button wx:if="{{signData.showSign}}" class="sign-btn" bindtap='doSign'>签到</button>
+    <form bindsubmit="doSign" report-submit='true'>
+      <button class="sign-btn" form-type="submit" >签到</button>
+    </form>            
   </view>
 
 </view>
@@ -31,6 +33,7 @@
   import wepy from 'wepy';
   import Cache from '../../utils/Cache';
   import auth from '../../api/auth';
+  import exam from '../../api/exam';
   import signin from '../../api/signin';
   import base from '../../mixins/base';
   import Tips from '../../utils/Tips';
@@ -57,6 +60,26 @@
       console.info("this.signData-----",this.signData);
 
       this.loaded();
+    };
+    collect(formId){
+      if(formId !=null && formId != "the formId is a mock one"){
+        exam.collectFormIds(formId);
+      }
+    };
+
+    async uploadFormIds(){
+      var openId = auth.getConfig('openId');
+      if (openId == null) {
+
+        openId=await auth.jscode2session();
+        await auth.setConfig('openId', openId);
+      }
+      var formIds = wepy.$instance.globalData.globalFormIds;  // 获取全局推送码
+      if (formIds!=null && formIds.length>0) {
+          formIds = JSON.stringify(formIds);  // 转换成JSON字符串
+          wepy.$instance.globalData.globalFormIds = [];  
+          await exam.uploadFormIds(formIds);
+      }
     };
 
     //计算两点位置距离  129.521713,42.926587
@@ -104,16 +127,13 @@
         this.signData=data;
         this.loaded();
       },
-      async doSign() {
+      async doSign(e) {
+        this.collect(e.detail.formId);
+        this.uploadFormIds();
         const res = await wepy.getLocation();
         console.info("res============",res);
         const latitude = res.latitude;//纬度
         const longitude = res.longitude;//经度 129.508256, 42.918363
-//        var distance=this.getDistance(latitude,longitude,42.918363,129.508256);
-//        console.info("distance============",distance);
-//        if(distance>100){
-//          await Tips.modal("超出有效距离");
-//        }else{
           const data =await signin.doSign(res.latitude,res.longitude);   
           console.info("data==",data);
           if(data.msg==1){

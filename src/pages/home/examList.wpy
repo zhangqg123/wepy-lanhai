@@ -115,7 +115,7 @@
           exam.collectFormIds(info.formId);
         }
         if (!auth.isLogin()) {
-          this.$root.$navigate('/pages/login/index',{url:'/pages/exam/examPage',examId:info.examId});
+          this.$root.$navigate('/pages/login/index');
         }else{
           this.$root.$navigate('/pages/exam/examPage', {examId: info.examId});
         }
@@ -125,7 +125,7 @@
           exam.collectFormIds(info.formId);
         }
         if (!auth.isLogin()) {
-          this.$root.$navigate('/pages/login/index',{url:'/pages/exam/examAnswer',examId:info.examId});
+          this.$root.$navigate('/pages/login/index');
         }else{
           try {
             var openId = auth.getConfig('openId');

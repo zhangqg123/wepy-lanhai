@@ -7,23 +7,30 @@
       </view>
     </view>
 
- <view class="list-box column" wx:if="{{showAnswer}}">
-    <repeat for="{{answers}}" key="index" index="index" item="item">
-      <view class="item-box row" data-id="{{item.key}}" >
-        <image class="shop-icon icon-lg" src="{{item.checked?'/images/icons/status-6.png':'/images/icons/plus-white.png'}}" />
-        <text class="exam-title xxl {{item.checked?'checked_parameter':''}}" >{{item.content}}</text>  
+    <view class="list-box column" wx:if="{{showAnswer}}">
+      <repeat for="{{answers}}" key="index" index="index" item="item">
+        <view class="item-box row" data-id="{{item.key}}" >
+          <image class="shop-icon icon-lg" src="{{item.checked?'/images/icons/status-6.png':'/images/icons/plus-white.png'}}" />
+          <text class="exam-title xxl {{item.checked?'checked_parameter':''}}" >{{item.content}}</text>  
+        </view>
+      </repeat>
+    </view>
+    <view class="list-box row" wx:if="{{!showAnswer}}">
+      <repeat for="{{answers}}" key="index" index="index" item="item">
+        <view class="item-box row" data-id="{{item.key}}" >
+          <image class="shop-icon icon-lg" src="{{item.checked?'/images/icons/status-6.png':'/images/icons/plus-white.png'}}" />
+          <text class="exam-title-2 xxl {{item.checked?'checked_parameter':''}}" >{{item.content}}</text>  
+        </view>
+      </repeat>
+    </view>
+    <view class="list-box column mt10" wx:if="{{question.analysis}}">
+      <view class="title-box row" >
+          <text class="xxl default ml20"> 答案解析 </text>
       </view>
-    </repeat>
- </view>
-  <view class="list-box row" wx:if="{{!showAnswer}}">
-    <repeat for="{{answers}}" key="index" index="index" item="item">
-      <view class="item-box row" data-id="{{item.key}}" >
-        <image class="shop-icon icon-lg" src="{{item.checked?'/images/icons/status-6.png':'/images/icons/plus-white.png'}}" />
-        <text class="exam-title-2 xxl {{item.checked?'checked_parameter':''}}" >{{item.content}}</text>  
+      <view class="title-box row">
+        <rich-text class="art-content" nodes="{{question.analysis}}" ></rich-text>
       </view>
-    </repeat>
- </view>
-
+    </view>
 
   </view>
 
@@ -49,6 +56,7 @@
       questions:[],
       question:null,
       article:null,
+      analysis:null,
       answers:[],
       showAnswer:false,
       showCard:false,
@@ -64,6 +72,7 @@
         }else{
           this.examId=option.examId;
           const data = await exam.questionList(this.examId);
+          console.info("data",data);
           this.questions=data.obj;
           this.length=data.obj.length;
           this.flag=0;

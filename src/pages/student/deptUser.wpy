@@ -12,7 +12,7 @@
             <image class="icon-xl"  src="/images/icons/customer.png"></image>
             <view class="column-around">
               <text class="btn-item-title ml20 xl">{{item.username}}</text>
-              <text class="btn-item-title ml20 lg">{{item.realname}}</text>
+              <text class="btn-item-title ml20 lg">{{item.realname==null ? '' : item.realname}}</text>
             </view>
           </button>
         </form>
@@ -85,64 +85,8 @@
       }
     };
     methods = {
-      async scan (e) {
+      async toStudent (id,e) {
         this.collect(e.detail.formId);
-      },
-      async student (e) {
-        this.collect(e.detail.formId);
-        if(this.userInfo.status==0){
-          this.$navigate('../login/index');
-        }else{
-          try{  
-            var data = await auth.userPhone(this.userInfo.phone);
-          } catch (e) {
-            Tips.error(e.message);
-          } finally {
-            this.loaded();
-          }
-          console.info("data",data);
-          if(data.success==true){
-            this.$navigate('../student/dept');
-          }else{
-            Tips.modal("需要教师权限");
-          }
-        }
-      },
-
-      async enter (e) {
-        this.collect(e.detail.formId);
-        if(this.userInfo.status==0){
-          this.$navigate('../login/index');
-        }else{
-          this.$navigate('../login/status');
-        }
-      },
-      async score (e) {
-        this.collect(e.detail.formId);
-        if(this.userInfo.status==0){
-          this.$root.$navigate('/pages/login/index');
-        }else{
-          this.$navigate('../exam/scoreList', {phone: this.userInfo.phone});
-        }
-      },
-
-      async follow (e) {
-        try{
-          this.collect(e.detail.formId);
-          this.uploadFormIds();
-          var data = await auth.userFollow();
-          console.info("data",data);
-          if(data.success==true){
-            this.$navigate('../exam/scoreList',{phone: data.obj.phone,soid:data.obj.openid});
-          }else{
-  //          Tips.modal("没有关注的学生");
-            this.$navigate('../login/follow');          
-          }
-        } catch (e) {
-          Tips.error(e.message);
-        } finally {
-          this.loaded();
-        }
       }
     };
     components = {

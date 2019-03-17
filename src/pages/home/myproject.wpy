@@ -100,13 +100,20 @@
 
     async load () {
       try {
-        this.uploadFormIds();
         const loginCode = auth.getConfig('login_code');
-        console.info("loginCode",loginCode);
         if (loginCode != null) {
           this.userInfo = await auth.userInfo();
-          if(this.userInfo.status==3){
-            this.userInfo.realname="未实名认证";
+          if(this.userInfo!=null){
+            if(this.userInfo.status==3){
+              this.userInfo.realname="未实名认证";
+            }
+          }else{
+            await auth.removeConfig('login_code');
+            await auth.removeConfig('status');
+            this.userInfo={};
+            this.userInfo.status=0;
+            this.userInfo.realname="登录获取更多服务";
+
           }
         }else{
           this.userInfo.status=0;
@@ -124,14 +131,16 @@
         exam.collectFormIds(formId);
       }
     };
+
     async uploadFormIds(){
       var openId = auth.getConfig('openId');
       if (openId == null) {
+
         openId=await auth.jscode2session();
         await auth.setConfig('openId', openId);
       }
       var formIds = wepy.$instance.globalData.globalFormIds;  // 获取全局推送码
-      if (formIds.length>0) {
+      if (formIds!=null && formIds.length>0) {
           formIds = JSON.stringify(formIds);  // 转换成JSON字符串
           wepy.$instance.globalData.globalFormIds = [];  
           await exam.uploadFormIds(formIds);

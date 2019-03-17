@@ -18,7 +18,7 @@
             <AssignItem :assign.sync="item" @startExam.user="startExam"  />
           </repeat>
         </view>
-        <Loadmore :page.sync="page" emptyText="暂无项目"/>
+        <Loadmore :page.sync="page" emptyText="暂无数据"/>
         <!--占位符-->
       </scroll-view>
     </view>
@@ -62,11 +62,12 @@
       try{
         const loginCode = auth.getConfig('login_code');
         if (loginCode != null) {
-
           this.page = exam.assignList(loginCode);
-          await this.next();
-          console.info("this.page.list",this.page.list);
-          this.isPageEmpty=false;
+          console.info("this.page",this.page);
+            await this.next();
+            console.info("this.page2",this.page);
+            this.isPageEmpty=false;            
+
         }else{
           this.isPageEmpty=true;
         }

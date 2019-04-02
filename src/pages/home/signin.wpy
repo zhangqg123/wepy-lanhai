@@ -49,11 +49,11 @@
     data = {...this.def};
     async onLoad () {
       var openId = auth.getConfig('openId');
+      console.info("openId",openId);
       if (openId == null) {
         openId=await auth.jscode2session();
         await auth.setConfig('openId', openId);
       }
-      console.info("openId",openId);
       var nowDate = new Date();//当前日期
       const data=await signin.loadCalendar(nowDate);//加载日历
       this.signData=data;

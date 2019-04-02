@@ -32,7 +32,7 @@
             </view>
           </button>
         </form>            
-          <button plain open-type="contact" >
+          <button plain open-type="contact" bindcontact="handleContact">
             <view class="operation-row column-center">
               <image src="/images/home/zw4.png"/>
               <text>客服消息</text>
@@ -163,6 +163,10 @@
       async menu (menu,e) {
         this.collect(e.detail.formId);
         this.$navigate(`../cms/articleList?columnId=${menu.id}&columnName=${menu.name}`); 
+      },
+      handleContact(e) {
+        console.info("e.path:",e.path)
+        console.info("e.query",e.query)
       },
       toArticlesContent(articleId,e) {
         var formId=e.detail.formId;

@@ -25,8 +25,8 @@
       xcxId: 'wx1dd61973b1e47f1b',
       aesKey: "W3ZNF7UMBAn9WFnx",
       ivKey: "chMQRwqC2xIIXqLV",
-      baseUrl2: 'https://hunchun.zqgzht.com', 
-//      baseUrl2: 'http://192.168.0.199:8080/jeecg',
+//      baseUrl2: 'https://hunchun.zqgzht.com', 
+      baseUrl2: 'http://192.168.0.199:8080/jeecg',
       version: 'v1.0.8'
     };
     constructor() {

@@ -69,7 +69,7 @@ export default class auth extends base {
     postParams[2]=["jscode",res.code];
     postParams[3]=["xcxId",xcxId];
     var signVal=sign.createSign(postParams,appId);//签名
-    const url = `${this.baseUrl2}/api/signin/getOpenid.do?jscode=${res.code}&xcxId=${xcxId}&nonce_str=${nonce_str}&sign=${signVal}&status=jscode2session`;
+    const url = `${this.baseUrl2}/api/lhs/getOpenid.do?jscode=${res.code}&xcxId=${xcxId}&nonce_str=${nonce_str}&sign=${signVal}&status=jscode2session`;
     return await this.get(url).then(data => {
       return data == null ? [] : data;
     });
